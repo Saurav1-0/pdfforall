@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PDFforAll — Free, private, client-side PDF tools. Merge, split, compress, convert and edit PDFs directly in your browser. No uploads, no servers.">
+  <meta name="keywords" content="pdf tools, merge pdf, split pdf, compress pdf, pdf to word, pdf to image, free pdf editor, online pdf tools, pdf converter">
+  <meta property="og:title" content="PDFforAll — Every PDF Tool, Right in Your Browser">
+  <meta property="og:description" content="Free, private PDF tools that work entirely in your browser. No uploads required.">
+  <meta property="og:url" content="https://pdfforall.in">
+  <title>PDFforAll — Every PDF Tool, Right in Your Browser</title>
+
+  <!-- Modern SaaS Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Supports both root style.css and css/style.css -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<!-- Ambient Background Glow -->
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </span>
+      PDF<span>for</span>All
+    </a>
+
+    <ul class="header-links">
+      <li><a href="#organize">Organize</a></li>
+      <li><a href="#convert-to">Convert</a></li>
+      <li><a href="#optimize">Optimize</a></li>
+      <li><a href="#edit">Edit & Sign</a></li>
+      <li><a href="#security">Security</a></li>
+    </ul>
+
+    <div class="header-actions">
+      <div class="privacy-pill" title="100% Client-Side WebAssembly Processing">
+        <span class="pulse-dot"></span>
+        Local Mode
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Theme">
+        <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    100% Free · 100% Private · Zero Uploads
+  </div>
+
+  <h1>Every PDF Tool,<br><span>Right in Your Browser</span></h1>
+  <p>Merge, split, compress, convert, and sign PDFs with zero server uploads. Powered locally by your device for instant speed and total privacy.</p>
+
+  <!-- Command Palette Search Bar -->
+  <div class="search-wrap">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search 26 tools (e.g. merge, compress, sign, password)…" autocomplete="off">
+    <button type="button" id="clearSearch" class="clear-btn hidden" aria-label="Clear search">✕</button>
+    <kbd class="search-kbd" id="searchKbd">/</kbd>
+  </div>
+
+  <!-- Quick Popular Tags -->
+  <div class="popular-chips">
+    <span class="popular-label">Popular:</span>
+    <a href="tools/merge.html" class="quick-chip">Merge PDF</a>
+    <a href="tools/compress.html" class="quick-chip">Compress PDF</a>
+    <a href="tools/split.html" class="quick-chip">Split PDF</a>
+    <a href="tools/images-to-pdf.html" class="quick-chip">Images to PDF</a>
+    <a href="tools/sign.html" class="quick-chip">Sign PDF</a>
+  </div>
+
+  <div class="hero-features">
+    <div class="hero-feature">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Files never leave your device
+    </div>
+    <div class="hero-feature">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Instant browser processing
+    </div>
+    <div class="hero-feature">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      No sign-up or watermarks
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ STATS BAR ═══════════════════════════ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat">
+      <div class="stat-num">26</div>
+      <div class="stat-label">Pro PDF Tools</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0 KB</div>
+      <div class="stat-label">Uploaded to Cloud</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Client-Side Engine</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Free Usage Limit</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FILTER BAR ═══════════════════════════ -->
+<div class="filter-bar-wrap">
+  <div class="filter-bar">
+    <div class="filter-pills" id="filterPills">
+      <button class="filter-pill active" data-filter="all">All Tools <span class="pill-count">26</span></button>
+      <button class="filter-pill" data-filter="organize">Organize <span class="pill-count">6</span></button>
+      <button class="filter-pill" data-filter="convert-to">Convert to PDF <span class="pill-count">4</span></button>
+      <button class="filter-pill" data-filter="convert-from">Convert from PDF <span class="pill-count">3</span></button>
+      <button class="filter-pill" data-filter="optimize">Optimize <span class="pill-count">4</span></button>
+      <button class="filter-pill" data-filter="edit">Edit & Annotate <span class="pill-count">6</span></button>
+      <button class="filter-pill" data-filter="security">Security <span class="pill-count">4</span></button>
+    </div>
+    <div class="results-counter" id="resultsCounter">Showing all 26 tools</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ TOOLS SECTION ═══════════════════════════ -->
+<main class="tools-section">
+
+  <!-- Empty Search State -->
+  <div class="empty-state hidden" id="emptyState">
+    <div class="empty-icon">🔍</div>
+    <h3>No matching PDF tools found</h3>
+    <p>Try searching for keywords like "merge", "split", "compress", "image", or "password".</p>
+    <button class="btn-reset" id="resetSearchBtn">Show All 26 Tools</button>
+  </div>
+
+  <!-- 1. ORGANIZE PDF -->
+  <div class="category-block" id="organize" data-category="organize">
+    <div class="category-header">
+      <div class="category-icon cat-amber">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <div>
+        <h2 class="category-name">Organize PDF</h2>
+        <p class="category-desc">Combine, split, reorder, or remove pages effortlessly</p>
+      </div>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="tools-grid">
+      <a href="tools/merge.html" class="tool-card" data-tone="amber">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><rect width="8" height="8" x="8" y="8" rx="1"/></svg>
+          </div>
+          <span class="tool-badge">Popular</span>
+        </div>
+        <h3>Merge PDF</h3>
+        <p>Combine multiple PDF files into one document in any order you choose.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/split.html" class="tool-card" data-tone="amber">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg>
+          </div>
+          <span class="tool-badge">Popular</span>
+        </div>
+        <h3>Split PDF</h3>
+        <p>Extract custom page ranges or split a PDF into multiple separate documents.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/remove-pages.html" class="tool-card" data-tone="amber">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          </div>
+        </div>
+        <h3>Remove Pages</h3>
+        <p>Visually select and delete unwanted pages from any PDF file.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/reorder.html" class="tool-card" data-tone="amber">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+          </div>
+        </div>
+        <h3>Reorder Pages</h3>
+        <p>Drag and drop page thumbnails to rearrange your PDF in any order.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/rotate.html" class="tool-card" data-tone="amber">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+          </div>
+        </div>
+        <h3>Rotate PDF</h3>
+        <p>Rotate individual pages or the entire document by 90°, 180°, or 270°.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/extract-pages.html" class="tool-card" data-tone="amber">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
+          </div>
+        </div>
+        <h3>Extract Pages</h3>
+        <p>Pick specific pages and save them instantly as a new clean PDF file.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. CONVERT TO PDF -->
+  <div class="category-block" id="convert-to" data-category="convert-to">
+    <div class="category-header">
+      <div class="category-icon cat-blue">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m15 15-3 3-3-3"/></svg>
+      </div>
+      <div>
+        <h2 class="category-name">Convert to PDF</h2>
+        <p class="category-desc">Turn images, web pages, text, and vector graphics into PDFs</p>
+      </div>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="tools-grid">
+      <a href="tools/images-to-pdf.html" class="tool-card" data-tone="blue">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          </div>
+          <span class="tool-badge">Popular</span>
+        </div>
+        <h3>Images to PDF</h3>
+        <p>Convert JPG, PNG, WebP, and BMP photos into a single formatted PDF.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/html-to-pdf.html" class="tool-card" data-tone="blue">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+        </div>
+        <h3>HTML to PDF</h3>
+        <p>Render HTML code or webpage markup into a clean, printable PDF.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/text-to-pdf.html" class="tool-card" data-tone="blue">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 6.1H3"/><path d="M21 12.1H3"/><path d="M15.1 18H3"/></svg>
+          </div>
+        </div>
+        <h3>Text to PDF</h3>
+        <p>Convert plain `.txt` notes or formatted text into a styled PDF document.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/svg-to-pdf.html" class="tool-card" data-tone="blue">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          </div>
+        </div>
+        <h3>SVG to PDF</h3>
+        <p>Convert vector SVG illustrations into crisp, resolution-independent PDFs.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 3. CONVERT FROM PDF -->
+  <div class="category-block" id="convert-from" data-category="convert-from">
+    <div class="category-header">
+      <div class="category-icon cat-emerald">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div>
+        <h2 class="category-name">Convert from PDF</h2>
+        <p class="category-desc">Export PDF pages to high-res images, text, or HTML</p>
+      </div>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="tools-grid">
+      <a href="tools/pdf-to-images.html" class="tool-card" data-tone="emerald">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+        </div>
+        <h3>PDF to Images</h3>
+        <p>Export every PDF page into high-resolution PNG or JPEG image files.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/pdf-to-text.html" class="tool-card" data-tone="emerald">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+          </div>
+        </div>
+        <h3>PDF to Text</h3>
+        <p>Extract all selectable text content from your PDF into a clean text file.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/pdf-to-html.html" class="tool-card" data-tone="emerald">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+        </div>
+        <h3>PDF to HTML</h3>
+        <p>Convert PDF document structure into a web-ready HTML document.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 4. OPTIMIZE PDF -->
+  <div class="category-block" id="optimize" data-category="optimize">
+    <div class="category-header">
+      <div class="category-icon cat-orange">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div>
+        <h2 class="category-name">Optimize PDF</h2>
+        <p class="category-desc">Shrink file size, flatten forms, repair, or convert to grayscale</p>
+      </div>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="tools-grid">
+      <a href="tools/compress.html" class="tool-card" data-tone="orange">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10 21 3"/><path d="M3 21l7-7"/></svg>
+          </div>
+          <span class="tool-badge">Popular</span>
+        </div>
+        <h3>Compress PDF</h3>
+        <p>Reduce PDF file size significantly while preserving sharp visual quality.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/repair.html" class="tool-card" data-tone="orange">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+        </div>
+        <h3>Repair PDF</h3>
+        <p>Fix corrupted cross-reference tables and recover unreadable PDF files.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/flatten.html" class="tool-card" data-tone="orange">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+        </div>
+        <h3>Flatten PDF</h3>
+        <p>Lock interactive form fields and annotations permanently into page content.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/grayscale.html" class="tool-card" data-tone="orange">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z"/></svg>
+          </div>
+        </div>
+        <h3>Grayscale PDF</h3>
+        <p>Convert full-color PDFs to black-and-white to save ink and reduce size.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 5. EDIT & ANNOTATE -->
+  <div class="category-block" id="edit" data-category="edit">
+    <div class="category-header">
+      <div class="category-icon cat-purple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div>
+        <h2 class="category-name">Edit & Annotate</h2>
+        <p class="category-desc">Sign, watermark, number pages, crop margins, or redact text</p>
+      </div>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="tools-grid">
+      <a href="tools/watermark.html" class="tool-card" data-tone="purple">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
+        </div>
+        <h3>Watermark PDF</h3>
+        <p>Stamp custom diagonal or tiled text and image watermarks onto pages.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/page-numbers.html" class="tool-card" data-tone="purple">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+          </div>
+        </div>
+        <h3>Add Page Numbers</h3>
+        <p>Insert customizable header or footer page numbering across your PDF.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/crop.html" class="tool-card" data-tone="purple">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+          </div>
+        </div>
+        <h3>Crop PDF</h3>
+        <p>Trim white margins or crop specific areas across one or all pages.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/sign.html" class="tool-card" data-tone="purple">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          </div>
+          <span class="tool-badge">Popular</span>
+        </div>
+        <h3>Sign PDF</h3>
+        <p>Draw, type, or upload your signature and place it anywhere on a PDF.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/redact.html" class="tool-card" data-tone="purple">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="6" rx="2"/><line x1="7" x2="17" y1="12" y2="12"/></svg>
+          </div>
+        </div>
+        <h3>Redact PDF</h3>
+        <p>Permanently black out confidential text, numbers, or sensitive areas.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/stamp.html" class="tool-card" data-tone="purple">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3 0 2 1 2 1 3.5V13"/></svg>
+          </div>
+        </div>
+        <h3>Stamp PDF</h3>
+        <p>Apply official rubber stamps (APPROVED, DRAFT, CONFIDENTIAL) to pages.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 6. SECURITY -->
+  <div class="category-block" id="security" data-category="security">
+    <div class="category-header">
+      <div class="category-icon cat-rose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div>
+        <h2 class="category-name">Security & Analysis</h2>
+        <p class="category-desc">Encrypt, unlock, compare document versions, and inspect metadata</p>
+      </div>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="tools-grid">
+      <a href="tools/protect.html" class="tool-card" data-tone="rose">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+          </div>
+        </div>
+        <h3>Protect PDF</h3>
+        <p>Encrypt your PDF with a strong password to prevent unauthorized access.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/unlock.html" class="tool-card" data-tone="rose">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </div>
+        </div>
+        <h3>Unlock PDF</h3>
+        <p>Remove password restrictions from a PDF file so you can use it freely.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/compare.html" class="tool-card" data-tone="rose">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><rect width="8" height="18" x="13" y="3" rx="1"/></svg>
+          </div>
+        </div>
+        <h3>Compare PDFs</h3>
+        <p>Inspect two versions of a PDF side-by-side to spot visual or text changes.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a href="tools/pdf-info.html" class="tool-card" data-tone="rose">
+        <div class="tool-card-top">
+          <div class="tool-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+        </div>
+        <h3>PDF Info</h3>
+        <p>Inspect internal PDF metadata, author details, fonts, and page dimensions.</p>
+        <div class="tool-card-footer">
+          <span>Open tool</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </span>
+        PDF<span>for</span>All
+      </a>
+      <p>Free, private PDF tools that run 100% inside your browser. We never upload or see your documents — your files never leave your device.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Organize</h4>
+      <ul>
+        <li><a href="tools/merge.html">Merge PDF</a></li>
+        <li><a href="tools/split.html">Split PDF</a></li>
+        <li><a href="tools/reorder.html">Reorder Pages</a></li>
+        <li><a href="tools/rotate.html">Rotate PDF</a></li>
+        <li><a href="tools/extract-pages.html">Extract Pages</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Convert</h4>
+      <ul>
+        <li><a href="tools/images-to-pdf.html">Images to PDF</a></li>
+        <li><a href="tools/pdf-to-images.html">PDF to Images</a></li>
+        <li><a href="tools/pdf-to-text.html">PDF to Text</a></li>
+        <li><a href="tools/html-to-pdf.html">HTML to PDF</a></li>
+        <li><a href="tools/text-to-pdf.html">Text to PDF</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Edit & Secure</h4>
+      <ul>
+        <li><a href="tools/compress.html">Compress PDF</a></li>
+        <li><a href="tools/watermark.html">Watermark PDF</a></li>
+        <li><a href="tools/sign.html">Sign PDF</a></li>
+        <li><a href="tools/protect.html">Protect PDF</a></li>
+        <li><a href="tools/pdf-info.html">PDF Info</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 PDFforAll.in — All processing happens locally in your browser. Zero data uploaded.</p>
+    <p>Built with ❤️ for total document privacy</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  const searchKbd = document.getElementById('searchKbd');
+  const filterPills = document.querySelectorAll('.filter-pill');
+  const cards = document.querySelectorAll('.tool-card');
+  const blocks = document.querySelectorAll('.category-block');
+  const resultsCounter = document.getElementById('resultsCounter');
+  const emptyState = document.getElementById('emptyState');
+  const resetSearchBtn = document.getElementById('resetSearchBtn');
+  const themeToggle = document.getElementById('themeToggle');
+
+  let activeCategory = 'all';
+
+  // ─── Theme Toggle (Dark / Light) ───
+  const savedTheme = localStorage.getItem('pdfforall-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pdfforall-theme', next);
+  });
+
+  // ─── Filter & Search Engine ───
+  function filterTools() {
+    const q = searchInput.value.toLowerCase().trim();
+    clearSearch.classList.toggle('hidden', !q);
+    searchKbd.classList.toggle('hidden', !!q);
+
+    let totalVisible = 0;
+
+    blocks.forEach(block => {
+      const cat = block.getAttribute('data-category');
+      const categoryMatches = activeCategory === 'all' || activeCategory === cat;
+
+      let blockVisibleCount = 0;
+      const blockCards = block.querySelectorAll('.tool-card');
+
+      blockCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const matchesQuery = !q || text.includes(q);
+        const isVisible = categoryMatches && matchesQuery;
+
+        card.classList.toggle('hidden', !isVisible);
+        if (isVisible) {
+          blockVisibleCount++;
+          totalVisible++;
+        }
+      });
+
+      block.classList.toggle('all-hidden', blockVisibleCount === 0);
+    });
+
+    if (totalVisible === 26 && !q && activeCategory === 'all') {
+      resultsCounter.textContent = 'Showing all 26 tools';
+    } else {
+      resultsCounter.textContent = `Showing ${totalVisible} of 26 tools`;
+    }
+
+    emptyState.classList.toggle('hidden', totalVisible > 0);
+  }
+
+  searchInput.addEventListener('input', filterTools);
+
+  clearSearch.addEventListener('click', () => {
+    searchInput.value = '';
+    searchInput.focus();
+    filterTools();
+  });
+
+  resetSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    activeCategory = 'all';
+    filterPills.forEach(p => p.classList.toggle('active', p.dataset.filter === 'all'));
+    filterTools();
+  });
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      activeCategory = pill.dataset.filter;
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      filterTools();
+    });
+  });
+
+  // Press '/' or Cmd/Ctrl + K to focus search
+  window.addEventListener('keydown', (e) => {
+    if ((e.key === '/' && document.activeElement !== searchInput) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
+      e.preventDefault();
+      searchInput.focus();
+    } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.blur();
+    }
+  });
+</script>
+</body>
+</html>
