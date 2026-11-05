@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redact PDF — PDFforAll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tool.css">
+  <link rel="icon" href="../favicon.png" type="image/png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+        <img src="../logo.png" alt="PDFforAll Logo" width="32" height="32" style="display:block; object-fit:contain; border-radius:6px;">
+        <span>PDF<span style="color:var(--primary);">for</span>All</span>
+      </a>
+    <div class="header-nav"><div style="display:flex;gap:0.5rem;align-items:center;"><a href="../support.html" class="btn-support" style="text-decoration:none;"><span>💖</span> Support</a><a href="../index.html" class="btn-back">← All Tools</a></div></div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-icon-large">⬛</div>
+  <h1>Redact PDF</h1>
+  <p>Draw black boxes over sensitive text or areas, then burn them permanently into the PDF.</p>
+</section>
+
+<div class="tool-workspace">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf">
+    <div class="drop-zone-icon">📄</div>
+    <h3>Drop a PDF file here</h3>
+    <p>or click to browse</p>
+    <button class="btn-browse" onclick="document.getElementById('fileInput').click()">Browse File</button>
+  </div>
+
+  <div id="editor" style="display:none;margin-top:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <label style="font-size:0.8rem;color:var(--text-muted);">Page</label>
+        <select id="pageSelect" style="min-width:80px;"></select>
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="clearBtn" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;">Clear Page</button>
+        <button id="clearAllBtn" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;">Clear All</button>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--gold);margin-bottom:0.5rem;">✏️ Click and drag on the page to draw redaction boxes</p>
+    <div style="position:relative;display:inline-block;max-width:100%;border:2px solid var(--border);border-radius:8px;overflow:hidden;cursor:crosshair;">
+      <canvas id="pageCanvas" style="display:block;max-width:100%;"></canvas>
+      <canvas id="drawCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;"></canvas>
+    </div>
+    <button class="btn-action" id="burnBtn" style="margin-top:1.5rem;">⬛ Burn Redactions & Download</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText">Processing…</p>
+  </div>
+  <div class="result-box" id="resultBox">
+    <div class="result-success">
+      <span class="result-success-icon">✅</span>
+      <div class="result-success-text"><h4>Redactions applied!</h4><p id="resultInfo"></p></div>
+    </div>
+    <a class="btn-download" id="downloadBtn" href="#" download="redacted.pdf">⬇️ Download redacted.pdf</a>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer class="tool-footer"><p>PDFforAll.in · <a href="../index.html">All Tools</a></p></footer>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let pdfFile=null,pdfJsDoc=null,currentPage=1,totalPages=0;
+// redactions[pageNum] = [{x,y,w,h}] in PDF-space (canvas coordinates)
+let redactions={};
+const pageCanvas=document.getElementById('pageCanvas'),drawCanvas=document.getElementById('drawCanvas');
+const pageCtx=pageCanvas.getContext('2d'),drawCtx=drawCanvas.getContext('2d');
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
+const progressWrap=document.getElementById('progressWrap'),progressFill=document.getElementById('progressFill'),progressText=document.getElementById('progressText');
+const resultBox=document.getElementById('resultBox'),downloadBtn=document.getElementById('downloadBtn'),errorBox=document.getElementById('errorBox');
+
+let drawing=false,startX,startY;
+let canvasScale=1;// display scale
+
+async function loadFile(file){
+  if(!file.name.toLowerCase().endsWith('.pdf')){showError('Please select a PDF file.');return;}
+  pdfFile=file;hideError();resultBox.classList.remove('visible');redactions={};
+  const ab=await file.arrayBuffer();
+  pdfJsDoc=await pdfjsLib.getDocument({data:new Uint8Array(ab)}).promise;
+  totalPages=pdfJsDoc.numPages;
+  const sel=document.getElementById('pageSelect');sel.innerHTML='';
+  for(let i=1;i<=totalPages;i++){const o=document.createElement('option');o.value=i;o.textContent='Page '+i;sel.appendChild(o);}
+  dropZone.style.display='none';document.getElementById('editor').style.display='block';
+  await renderPage(1);
+}
+
+async function renderPage(n){
+  currentPage=n;
+  const page=await pdfJsDoc.getPage(n);
+  const vp=page.getViewport({scale:1.5});
+  pageCanvas.width=vp.width;pageCanvas.height=vp.height;
+  drawCanvas.width=vp.width;drawCanvas.height=vp.height;
+  canvasScale=vp.scale;
+  await page.render({canvasContext:pageCtx,viewport:vp}).promise;
+  redrawRedactions();
+}
+
+function redrawRedactions(){
+  drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
+  const rects=redactions[currentPage]||[];
+  drawCtx.fillStyle='#000000';
+  rects.forEach(r=>{drawCtx.fillRect(r.x,r.y,r.w,r.h);});
+}
+
+function getCanvasPos(e){
+  const rect=drawCanvas.getBoundingClientRect();
+  const scX=drawCanvas.width/rect.width,scY=drawCanvas.height/rect.height;
+  return{x:(e.clientX-rect.left)*scX,y:(e.clientY-rect.top)*scY};
+}
+
+drawCanvas.addEventListener('mousedown',e=>{drawing=true;const p=getCanvasPos(e);startX=p.x;startY=p.y;});
+drawCanvas.addEventListener('mousemove',e=>{
+  if(!drawing)return;
+  const p=getCanvasPos(e);
+  redrawRedactions();
+  drawCtx.fillStyle='rgba(0,0,0,0.6)';
+  drawCtx.fillRect(startX,startY,p.x-startX,p.y-startY);
+});
+drawCanvas.addEventListener('mouseup',e=>{
+  if(!drawing)return;drawing=false;
+  const p=getCanvasPos(e);
+  if(Math.abs(p.x-startX)<5&&Math.abs(p.y-startY)<5)return;
+  if(!redactions[currentPage])redactions[currentPage]=[];
+  const x=Math.min(startX,p.x),y=Math.min(startY,p.y),w=Math.abs(p.x-startX),h=Math.abs(p.y-startY);
+  redactions[currentPage].push({x,y,w,h});
+  redrawRedactions();
+});
+drawCanvas.addEventListener('mouseleave',()=>drawing=false);
+
+document.getElementById('pageSelect').addEventListener('change',e=>renderPage(parseInt(e.target.value)));
+document.getElementById('clearBtn').addEventListener('click',()=>{redactions[currentPage]=[];redrawRedactions();});
+document.getElementById('clearAllBtn').addEventListener('click',()=>{redactions={};redrawRedactions();});
+
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInput.files[0]);fileInput.value='';});
+
+document.getElementById('burnBtn').addEventListener('click',async()=>{
+  if(!pdfFile)return;
+  const totalRects=Object.values(redactions).reduce((s,a)=>s+a.length,0);
+  if(!totalRects){showError('Please draw at least one redaction box.');return;}
+  hideError();showProgress(10,'Loading PDF…');
+  try{
+    const ab=await pdfFile.arrayBuffer();
+    const doc=await PDFLib.PDFDocument.load(ab,{ignoreEncryption:true});
+    let count=0;
+    for(const[pageNumStr,rects]of Object.entries(redactions)){
+      const pi=parseInt(pageNumStr)-1;
+      setProgress(Math.round(20+((pi+1)/totalPages)*70),`Applying redactions to page ${pi+1}…`);
+      const page=doc.getPage(pi);
+      const{width,height}=page.getSize();
+      // Canvas coords → PDF coords (flip Y, adjust scale)
+      const scale=canvasScale;// actually 1.5
+      for(const r of rects){
+        const pdfX=r.x/scale;
+        const pdfY=height-(r.y+r.h)/scale;
+        const pdfW=r.w/scale;
+        const pdfH=r.h/scale;
+        page.drawRectangle({x:pdfX,y:pdfY,width:pdfW,height:pdfH,color:PDFLib.rgb(0,0,0),opacity:1});
+        count++;
+      }
+    }
+    setProgress(90,'Saving…');
+    const bytes=await doc.save({useObjectStreams:true});
+    const blob=new Blob([bytes],{type:'application/pdf'});
+    downloadBtn.href=URL.createObjectURL(blob);
+    document.getElementById('resultInfo').textContent=`${count} redaction${count!==1?'s':''} permanently applied`;
+    setProgress(100,'Done!');
+    setTimeout(()=>{progressWrap.classList.remove('visible');resultBox.classList.add('visible');},400);
+  }catch(e){showError('Error: '+e.message);progressWrap.classList.remove('visible');}
+});
+
+function showProgress(pct,txt){progressWrap.classList.add('visible');resultBox.classList.remove('visible');setProgress(pct,txt);}
+function setProgress(pct,txt){progressFill.style.width=pct+'%';progressText.textContent=txt;}
+function showError(msg){errorBox.textContent=msg;errorBox.classList.add('visible');}
+function hideError(){errorBox.classList.remove('visible');}
+</script>
+</body>
+</html>
