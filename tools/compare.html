@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare PDFs — PDFforAll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tool.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="logo">PDF<span>for</span>All</a>
+    <div class="header-nav"><a href="../index.html" class="btn-back">← All Tools</a></div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-icon-large">🔍</div>
+  <h1>Compare PDFs</h1>
+  <p>Upload two PDF versions and visually compare them side-by-side page by page.</p>
+</section>
+
+<div class="tool-workspace">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+    <div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;">Original</div>
+      <div class="drop-zone" id="dropZone1" style="padding:2rem 1rem;">
+        <input type="file" id="fileInput1" accept=".pdf">
+        <div class="drop-zone-icon" style="font-size:1.5rem;">📄</div>
+        <h3 style="font-size:0.9rem;" id="label1">Drop PDF #1</h3>
+        <p style="font-size:0.75rem;">Version A</p>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;">Revised</div>
+      <div class="drop-zone" id="dropZone2" style="padding:2rem 1rem;border-color:rgba(201,168,76,0.3);">
+        <input type="file" id="fileInput2" accept=".pdf">
+        <div class="drop-zone-icon" style="font-size:1.5rem;">📄</div>
+        <h3 style="font-size:0.9rem;" id="label2">Drop PDF #2</h3>
+        <p style="font-size:0.75rem;">Version B</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-action" id="compareBtn" disabled>🔍 Compare PDFs</button>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText">Comparing…</p>
+  </div>
+
+  <div id="resultsArea" style="display:none;margin-top:1.5rem;">
+    <div id="summaryBox" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-bottom:1.5rem;"></div>
+    <div id="pageCompare"></div>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer class="tool-footer"><p>PDFforAll.in · <a href="../index.html">All Tools</a></p></footer>
+
+<style>
+.compare-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;}
+.compare-side label{font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:0.3rem;}
+.compare-side canvas{width:100%;border:1px solid var(--border);border-radius:8px;}
+.diff-badge{display:inline-block;padding:0.15rem 0.5rem;border-radius:100px;font-size:0.7rem;font-weight:600;}
+.badge-diff{background:rgba(255,180,80,0.15);color:#ffb450;}
+.badge-same{background:rgba(111,220,111,0.1);color:#6fdc6f;}
+</style>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let doc1=null,doc2=null,file1=null,file2=null;
+const progressWrap=document.getElementById('progressWrap'),progressFill=document.getElementById('progressFill'),progressText=document.getElementById('progressText');
+const errorBox=document.getElementById('errorBox');
+
+function setupDrop(zoneId,inputId,slot){
+  const zone=document.getElementById(zoneId),input=document.getElementById(inputId);
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadDoc(e.dataTransfer.files[0],slot);});
+  input.addEventListener('change',()=>{if(input.files[0])loadDoc(input.files[0],slot);input.value='';});
+  zone.addEventListener('click',()=>input.click());
+}
+
+async function loadDoc(file,slot){
+  if(!file.name.toLowerCase().endsWith('.pdf'))return;
+  const ab=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(ab)}).promise;
+  if(slot===1){doc1=pdf;file1=file;document.getElementById('label1').textContent='✅ '+file.name;}
+  else{doc2=pdf;file2=file;document.getElementById('label2').textContent='✅ '+file.name;}
+  document.getElementById('compareBtn').disabled=!(doc1&&doc2);
+}
+
+setupDrop('dropZone1','fileInput1',1);
+setupDrop('dropZone2','fileInput2',2);
+
+function getPageText(page){return page.getTextContent().then(c=>c.items.map(i=>i.str).join(' '));}
+
+document.getElementById('compareBtn').addEventListener('click',async()=>{
+  if(!doc1||!doc2)return;hideError();progressWrap.classList.add('visible');document.getElementById('resultsArea').style.display='none';
+  try{
+    const n1=doc1.numPages,n2=doc2.numPages;
+    const maxPages=Math.max(n1,n2);
+    const pageCompare=document.getElementById('pageCompare');pageCompare.innerHTML='';
+    let diffCount=0,sameCount=0;
+
+    for(let i=1;i<=maxPages;i++){
+      setProgress(Math.round((i/maxPages)*90),`Comparing page ${i}/${maxPages}…`);
+      const row=document.createElement('div');row.className='compare-row';
+      let text1='',text2='',cv1=null,cv2=null;
+
+      if(i<=n1){
+        const p=await doc1.getPage(i);text1=await getPageText(p);
+        const vp=p.getViewport({scale:0.8});
+        cv1=document.createElement('canvas');cv1.width=vp.width;cv1.height=vp.height;
+        await p.render({canvasContext:cv1.getContext('2d'),viewport:vp}).promise;
+      }
+      if(i<=n2){
+        const p=await doc2.getPage(i);text2=await getPageText(p);
+        const vp=p.getViewport({scale:0.8});
+        cv2=document.createElement('canvas');cv2.width=vp.width;cv2.height=vp.height;
+        await p.render({canvasContext:cv2.getContext('2d'),viewport:vp}).promise;
+      }
+
+      const isDiff=text1!==text2;
+      if(isDiff)diffCount++;else sameCount++;
+
+      const badge=isDiff?`<span class="diff-badge badge-diff">⚠ Different</span>`:`<span class="diff-badge badge-same">✓ Same</span>`;
+      const title=document.createElement('div');
+      title.style.cssText='grid-column:1/-1;display:flex;align-items:center;gap:0.75rem;margin-bottom:0.3rem;';
+      title.innerHTML=`<span style="font-size:0.82rem;font-weight:600;">Page ${i}</span>${badge}`;
+
+      const side1=document.createElement('div');side1.className='compare-side';
+      side1.innerHTML=`<label>${file1.name}</label>`;
+      if(cv1)side1.appendChild(cv1);else side1.innerHTML+=`<div style="background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:2rem;text-align:center;font-size:0.8rem;color:var(--text-muted);">No page ${i}</div>`;
+
+      const side2=document.createElement('div');side2.className='compare-side';
+      side2.innerHTML=`<label>${file2.name}</label>`;
+      if(cv2)side2.appendChild(cv2);else side2.innerHTML+=`<div style="background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:2rem;text-align:center;font-size:0.8rem;color:var(--text-muted);">No page ${i}</div>`;
+
+      row.appendChild(title);row.appendChild(side1);row.appendChild(side2);
+      if(i>1)pageCompare.appendChild(document.createElement('hr')).style.cssText='border:none;border-top:1px solid var(--border);margin:1rem 0;';
+      pageCompare.appendChild(row);
+    }
+
+    setProgress(100,'Done!');
+    document.getElementById('summaryBox').innerHTML=`
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--gold);">${n1}</div><div style="font-size:0.75rem;color:var(--text-muted);">Pages in A</div></div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:var(--gold);">${n2}</div><div style="font-size:0.75rem;color:var(--text-muted);">Pages in B</div></div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:#ffb450;">${diffCount}</div><div style="font-size:0.75rem;color:var(--text-muted);">Pages different</div></div>
+        <div><div style="font-size:1.5rem;font-weight:700;color:#6fdc6f;">${sameCount}</div><div style="font-size:0.75rem;color:var(--text-muted);">Pages identical</div></div>
+      </div>`;
+    setTimeout(()=>{progressWrap.classList.remove('visible');document.getElementById('resultsArea').style.display='block';},400);
+  }catch(e){showError('Error: '+e.message);progressWrap.classList.remove('visible');}
+});
+
+function setProgress(pct,txt){progressFill.style.width=pct+'%';progressText.textContent=txt;}
+function showError(msg){errorBox.textContent=msg;errorBox.classList.add('visible');}
+function hideError(){errorBox.classList.remove('visible');}
+</script>
+</body>
+</html>
