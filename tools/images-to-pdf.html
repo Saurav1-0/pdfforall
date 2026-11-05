@@ -102,11 +102,9 @@
 .img-item-remove:hover{color:#e55;background:rgba(238,85,85,0.1);}
 .move-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:0.75rem;padding:0.3rem 0.5rem;border-radius:6px;cursor:pointer;}
 .move-btn:disabled{opacity:0.3;cursor:not-allowed;}
-.img-orientation-label{display:block;font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;margin-bottom:0.2rem;}
-.img-orientation{display:block;max-width:170px;width:100%;padding:0.4rem 0.55rem;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);font:inherit;font-size:0.8rem;}
 .img-rotation-label{display:block;font-size:0.72rem;color:var(--text-muted);margin-top:0.4rem;margin-bottom:0.2rem;}
 .img-rotation{display:block;max-width:170px;width:100%;padding:0.4rem 0.55rem;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);font:inherit;font-size:0.8rem;}
-@media(max-width:520px){.img-item{gap:0.55rem;padding:0.65rem;flex-wrap:wrap;}.img-item-info{flex-basis:calc(100% - 65px);}.img-item img{width:44px;height:44px;}.img-orientation{max-width:100%;}}
+@media(max-width:520px){.img-item{gap:0.55rem;padding:0.65rem;flex-wrap:wrap;}.img-item-info{flex-basis:calc(100% - 65px);}.img-item img{width:44px;height:44px;}}
 </style>
 
 <script>
@@ -123,7 +121,7 @@ function addImages(files){
   for(const f of files){
     if(!/\.(jpe?g|png|webp|bmp|gif)$/i.test(f.name))continue;
     const url=URL.createObjectURL(f);
-    images.push({file:f,url,orientation:'portrait',rotation:0});
+    images.push({file:f,url,rotation:0});
   }
   renderList();
 }
@@ -139,11 +137,6 @@ function renderList(){
       <div class="img-item-info">
         <div class="img-item-name">${img.file.name}</div>
         <div class="img-item-size">${formatSize(img.file.size)}</div>
-        <label class="img-orientation-label" for="img-orientation-${i}">PDF page orientation</label>
-        <select class="img-orientation" id="img-orientation-${i}" aria-label="Page orientation for ${img.file.name}">
-          <option value="portrait" ${img.orientation==='portrait'?'selected':''}>Portrait</option>
-          <option value="landscape" ${img.orientation==='landscape'?'selected':''}>Landscape</option>
-        </select>
         <label class="img-rotation-label" for="img-rotation-${i}">Rotate this image</label>
         <select class="img-rotation" id="img-rotation-${i}" aria-label="Rotation for ${img.file.name}">
           <option value="0" ${img.rotation===0?'selected':''}>No rotation</option>
@@ -156,9 +149,6 @@ function renderList(){
       <button class="move-btn" onclick="mv(${i},1)" ${i===images.length-1?'disabled':''}>▼</button>
       <button class="img-item-remove" onclick="removeImg(${i})">✕</button>`;
     imageList.appendChild(div);
-    div.querySelector('.img-orientation').addEventListener('change',e=>{
-      images[i].orientation=e.target.value;
-    });
     div.querySelector('.img-rotation').addEventListener('change',e=>{
       images[i].rotation=Number(e.target.value);
     });
@@ -204,7 +194,6 @@ document.getElementById('convertBtn').addEventListener('click',async()=>{
       setProgress(Math.round(10+(i/images.length)*85),`Embedding image ${i+1}/${images.length}…`);
       const f=images[i].file;
       let [pw,ph]=PAGE_SIZES[szKey];
-      if(images[i].orientation==='landscape')[pw,ph]=[ph,pw];
       const rotated=await getRotatedImageBytes(f,images[i].rotation);
       let img;
       if(rotated.type==='image/png')img=await pdfDoc.embedPng(rotated.bytes);
