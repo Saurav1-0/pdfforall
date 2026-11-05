@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove Pages — PDFforAll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tool.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="logo">PDF<span>for</span>All</a>
+    <div class="header-nav"><a href="../index.html" class="btn-back">← All Tools</a></div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-icon-large">🗑️</div>
+  <h1>Remove Pages</h1>
+  <p>Select page thumbnails to delete, then save the remaining pages as a new PDF.</p>
+</section>
+
+<div class="tool-workspace">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf">
+    <div class="drop-zone-icon">📄</div>
+    <h3>Drop a PDF file here</h3>
+    <p>or click to browse</p>
+    <button class="btn-browse" onclick="document.getElementById('fileInput').click()">Browse File</button>
+  </div>
+
+  <div id="controls" style="display:none;margin-top:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <span id="selectionInfo" style="font-size:0.85rem;color:var(--text-muted);">Click pages to mark for removal</span>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="selectAllBtn" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;">Select All</button>
+        <button id="clearAllBtn" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;">Clear</button>
+      </div>
+    </div>
+    <div class="page-grid" id="pageGrid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.75rem;"></div>
+    <button class="btn-action" id="removeBtn" style="margin-top:1.5rem;" disabled>🗑️ Remove Selected Pages</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText">Processing…</p>
+  </div>
+  <div class="result-box" id="resultBox">
+    <div class="result-success">
+      <span class="result-success-icon">✅</span>
+      <div class="result-success-text"><h4>Pages removed!</h4><p id="resultInfo">Your PDF is ready.</p></div>
+    </div>
+    <a class="btn-download" id="downloadBtn" href="#" download="removed-pages.pdf">⬇️ Download PDF</a>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer class="tool-footer"><p>PDFforAll.in · <a href="../index.html">All Tools</a></p></footer>
+
+<style>
+.page-thumb-remove{position:absolute;top:4px;right:4px;background:rgba(238,85,85,0.9);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
+.page-thumb.marked{border-color:#e55;opacity:0.6;}
+.page-thumb.marked::after{content:'🗑️';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;z-index:2;}
+</style>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let pdfFile=null,pdfDoc=null,totalPages=0,markedPages=new Set();
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
+const progressWrap=document.getElementById('progressWrap'),progressFill=document.getElementById('progressFill'),progressText=document.getElementById('progressText');
+const resultBox=document.getElementById('resultBox'),downloadBtn=document.getElementById('downloadBtn'),errorBox=document.getElementById('errorBox');
+
+async function loadFile(file){
+  if(!file.name.toLowerCase().endsWith('.pdf')){showError('Please select a PDF file.');return;}
+  pdfFile=file;hideError();resultBox.classList.remove('visible');markedPages.clear();
+  const ab=await file.arrayBuffer();
+  pdfDoc=await pdfjsLib.getDocument({data:new Uint8Array(ab)}).promise;
+  totalPages=pdfDoc.numPages;
+  dropZone.style.display='none';document.getElementById('controls').style.display='block';
+  await renderGrid();
+}
+
+async function renderGrid(){
+  const grid=document.getElementById('pageGrid');grid.innerHTML='';
+  for(let i=1;i<=totalPages;i++){
+    const thumb=document.createElement('div');thumb.className='page-thumb'+(markedPages.has(i)?' marked':'');
+    thumb.dataset.page=i;thumb.style.cursor='pointer';
+    const page=await pdfDoc.getPage(i);
+    const vp=page.getViewport({scale:0.5});
+    const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;
+    await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+    const lbl=document.createElement('div');lbl.className='page-thumb-label';lbl.textContent='Page '+i;
+    thumb.appendChild(cv);thumb.appendChild(lbl);
+    thumb.addEventListener('click',()=>togglePage(i,thumb));
+    grid.appendChild(thumb);
+  }
+  updateUI();
+}
+
+function togglePage(n,el){
+  if(markedPages.has(n)){markedPages.delete(n);el.classList.remove('marked');}
+  else{markedPages.add(n);el.classList.add('marked');}
+  updateUI();
+}
+
+function updateUI(){
+  const sel=markedPages.size,rem=totalPages-sel;
+  document.getElementById('selectionInfo').textContent=sel>0?`${sel} page${sel!==1?'s':''} selected for removal (${rem} will remain)`:'Click pages to mark for removal';
+  document.getElementById('removeBtn').disabled=sel===0||rem===0;
+}
+
+document.getElementById('selectAllBtn').addEventListener('click',()=>{
+  for(let i=1;i<=totalPages;i++)markedPages.add(i);
+  document.querySelectorAll('.page-thumb').forEach(t=>t.classList.add('marked'));updateUI();
+});
+document.getElementById('clearAllBtn').addEventListener('click',()=>{
+  markedPages.clear();document.querySelectorAll('.page-thumb').forEach(t=>t.classList.remove('marked'));updateUI();
+});
+
+document.getElementById('removeBtn').addEventListener('click',async()=>{
+  if(!pdfFile)return;hideError();showProgress(10,'Loading PDF…');
+  try{
+    const ab=await pdfFile.arrayBuffer();
+    const srcDoc=await PDFLib.PDFDocument.load(ab);
+    const newDoc=await PDFLib.PDFDocument.create();
+    const keepPages=[...Array(totalPages)].map((_,i)=>i+1).filter(p=>!markedPages.has(p));
+    setProgress(50,'Extracting pages…');
+    const copied=await newDoc.copyPages(srcDoc,keepPages.map(p=>p-1));
+    copied.forEach(p=>newDoc.addPage(p));
+    setProgress(90,'Saving…');
+    const bytes=await newDoc.save({useObjectStreams:true});
+    const blob=new Blob([bytes],{type:'application/pdf'});
+    downloadBtn.href=URL.createObjectURL(blob);
+    document.getElementById('resultInfo').textContent=`${markedPages.size} pages removed · ${keepPages.length} pages remaining`;
+    setProgress(100,'Done!');
+    setTimeout(()=>{progressWrap.classList.remove('visible');resultBox.classList.add('visible');},400);
+  }catch(e){showError('Error: '+e.message);progressWrap.classList.remove('visible');}
+});
+
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInput.files[0]);fileInput.value='';});
+
+function showProgress(pct,txt){progressWrap.classList.add('visible');resultBox.classList.remove('visible');setProgress(pct,txt);}
+function setProgress(pct,txt){progressFill.style.width=pct+'%';progressText.textContent=txt;}
+function showError(msg){errorBox.textContent=msg;errorBox.classList.add('visible');}
+function hideError(){errorBox.classList.remove('visible');}
+</script>
+</body>
+</html>
