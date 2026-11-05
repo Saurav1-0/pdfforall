@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Us — PDFforAll</title>
+  <link rel="stylesheet" href="css/tool.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo">PDF<span>for</span>All</a>
+      <a href="index.html" class="btn-back">← All Tools</a>
+    </div>
+  </header>
+  <section class="tool-hero">
+    <h1>Contact Us</h1>
+    <p>Have feedback or suggestions? We would love to hear from you.</p>
+  </section>
+  <main class="tool-workspace" style="max-width:800px;line-height:1.7;">
+    
+    <form onsubmit="event.preventDefault(); alert('Thank you! Message received.');">
+      <div class="option-row" style="flex-direction:column;align-items:flex-start;margin-bottom:1rem;">
+        <label class="option-label">Your Email</label>
+        <input type="text" placeholder="you@domain.com" style="width:100%;margin-top:0.3rem;" required>
+      </div>
+      <div class="option-row" style="flex-direction:column;align-items:flex-start;margin-bottom:1.5rem;">
+        <label class="option-label">Message</label>
+        <textarea rows="5" style="width:100%;padding:0.75rem;border-radius:8px;border:1px solid var(--border);font-family:inherit;" required></textarea>
+      </div>
+      <button type="submit" class="btn-action">Send Message</button>
+    </form>
+  </main>
+  <footer class="tool-footer"><p>PDFforAll.in • <a href="index.html">All Tools</a></p></footer>
+</body>
+</html>
