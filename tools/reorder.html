@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reorder Pages — PDFforAll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tool.css">
+  <link rel="icon" href="../favicon.png" type="image/png">
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+        <img src="../logo.png" alt="PDFforAll Logo" width="32" height="32" style="display:block; object-fit:contain; border-radius:6px;">
+        <span>PDF<span style="color:var(--primary);">for</span>All</span>
+      </a>
+    <div class="header-nav"><div style="display:flex;gap:0.5rem;align-items:center;"><a href="../support.html" class="btn-support" style="text-decoration:none;"><span>💖</span> Support</a><a href="../index.html" class="btn-back">← All Tools</a></div></div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-icon-large">↕️</div>
+  <h1>Reorder Pages</h1>
+  <p>Drag and drop thumbnails to rearrange pages in any order, then save.</p>
+</section>
+
+<div class="tool-workspace">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf">
+    <div class="drop-zone-icon">📄</div>
+    <h3>Drop a PDF file here</h3>
+    <p>or click to browse</p>
+    <button class="btn-browse" onclick="document.getElementById('fileInput').click()">Browse File</button>
+  </div>
+
+  <div id="controls" style="display:none;margin-top:1.5rem;">
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">🖱️ Drag thumbnails to reorder · Use ▲▼ buttons for precise control</p>
+    <div class="page-grid" id="pageGrid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.75rem;"></div>
+    <button class="btn-action" id="saveBtn" style="margin-top:1.5rem;">↕️ Save Reordered PDF</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText">Processing…</p>
+  </div>
+  <div class="result-box" id="resultBox">
+    <div class="result-success">
+      <span class="result-success-icon">✅</span>
+      <div class="result-success-text"><h4>Pages reordered!</h4><p id="resultInfo">Your PDF is ready.</p></div>
+    </div>
+    <a class="btn-download" id="downloadBtn" href="#" download="reordered.pdf">⬇️ Download reordered.pdf</a>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer class="tool-footer"><p>PDFforAll.in · <a href="../index.html">All Tools</a></p></footer>
+
+<style>
+
+.reorder-preview{background:#fff;padding:6px;display:flex;align-items:center;justify-content:center;min-height:150px;max-height:260px;overflow:hidden;}
+.reorder-preview canvas{max-width:100%;max-height:248px;object-fit:contain;box-shadow:0 1px 5px rgba(0,0,0,.12);}
+#pageGrid{align-items:start;}
+.reorder-thumb{background:var(--surface);border:2px solid var(--border);border-radius:10px;overflow:hidden;cursor:grab;display:flex;flex-direction:column;user-select:none;transition:border-color 0.2s,transform 0.15s,box-shadow 0.15s;}
+.reorder-thumb:active{cursor:grabbing;}
+.reorder-thumb.dragging{opacity:0.4;border-color:var(--gold);}
+.reorder-thumb.drag-over-target{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,0.3);}
+.reorder-thumb canvas{width:100%;display:block;}
+.thumb-controls{display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0.4rem;background:rgba(0,0,0,0.3);}
+.thumb-label{font-size:0.7rem;color:#ccc;}
+.thumb-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.65rem;padding:0.2rem 0.3rem;border-radius:4px;transition:color 0.2s;}
+.thumb-btn:hover{color:var(--gold);}
+.thumb-btn:disabled{opacity:0.3;cursor:not-allowed;}
+</style>
+
+<script>
+/* PDF.js preview setup */
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+let pdfFile = null, pdfDoc = null, pageOrder = [], pageCanvases = [];
+let dragSrc = null;
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const controls = document.getElementById('controls');
+const pageGrid = document.getElementById('pageGrid');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const resultBox = document.getElementById('resultBox');
+const downloadBtn = document.getElementById('downloadBtn');
+const errorBox = document.getElementById('errorBox');
+
+async function loadFile(file) {
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.pdf')) {
+    showError('Please select a PDF file.');
+    return;
+  }
+  if (!window.pdfjsLib || !window.PDFLib) {
+    showError('PDF libraries could not be loaded. Please refresh the page and try again.');
+    return;
+  }
+
+  hideError();
+  resultBox.classList.remove('visible');
+  showProgress(2, 'Opening PDF…');
+  pageGrid.innerHTML = '';
+  pageCanvases = [];
+  pdfFile = file;
+
+  try {
+    const data = new Uint8Array(await file.arrayBuffer());
+    pdfDoc = await pdfjsLib.getDocument({
+      data,
+      useWorkerFetch: true,
+      isEvalSupported: false
+    }).promise;
+
+    const total = pdfDoc.numPages;
+    pageOrder = Array.from({ length: total }, (_, i) => i + 1);
+    dropZone.style.display = 'none';
+    controls.style.display = 'block';
+
+    for (let pageNum = 1; pageNum <= total; pageNum++) {
+      setProgress(5 + Math.round((pageNum / total) * 75),
+        `Creating preview ${pageNum} of ${total}…`);
+      const page = await pdfDoc.getPage(pageNum);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const targetWidth = 240;
+      const scale = Math.min(targetWidth / baseViewport.width, 1);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d', { alpha: false });
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.ceil(viewport.width * dpr);
+      canvas.height = Math.ceil(viewport.height * dpr);
+      canvas.style.width = '100%';
+      canvas.style.height = 'auto';
+      await page.render({
+        canvasContext: context,
+        viewport,
+        transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null
+      }).promise;
+      pageCanvases.push(canvas);
+    }
+
+    renderGrid();
+    progressWrap.classList.remove('visible');
+    if (!total) showError('This PDF does not contain any pages.');
+  } catch (error) {
+    console.error('Reorder PDF preview error:', error);
+    progressWrap.classList.remove('visible');
+    controls.style.display = 'none';
+    dropZone.style.display = 'block';
+    showError('Could not create page previews. Please try another PDF or refresh the page. Details: ' + (error.message || 'Unknown error'));
+  }
+}
+
+function renderGrid() {
+  pageGrid.innerHTML = '';
+  pageOrder.forEach((pageNum, idx) => {
+    const item = document.createElement('div');
+    item.className = 'reorder-thumb';
+    item.draggable = true;
+    item.dataset.idx = String(idx);
+
+    const preview = document.createElement('div');
+    preview.className = 'reorder-preview';
+    const canvas = pageCanvases[pageNum - 1].cloneNode(true);
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
+    preview.appendChild(canvas);
+    item.appendChild(preview);
+
+    const ctrl = document.createElement('div');
+    ctrl.className = 'thumb-controls';
+    const label = document.createElement('span');
+    label.className = 'thumb-label';
+    label.textContent = 'Page ' + pageNum;
+    const buttons = document.createElement('div');
+    buttons.style.cssText = 'display:flex;gap:2px;';
+    const up = makeMoveButton('▲', idx, -1, idx === 0);
+    const down = makeMoveButton('▼', idx, 1, idx === pageOrder.length - 1);
+    buttons.append(up, down);
+    ctrl.append(label, buttons);
+    item.appendChild(ctrl);
+
+    item.addEventListener('dragstart', event => {
+      dragSrc = idx;
+      item.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', String(idx));
+    });
+    item.addEventListener('dragend', () => {
+      document.querySelectorAll('.reorder-thumb').forEach(el =>
+        el.classList.remove('dragging', 'drag-over-target'));
+    });
+    item.addEventListener('dragover', event => {
+      event.preventDefault();
+      item.classList.add('drag-over-target');
+    });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-over-target'));
+    item.addEventListener('drop', event => {
+      event.preventDefault();
+      item.classList.remove('drag-over-target');
+      const source = dragSrc;
+      const destination = Number(item.dataset.idx);
+      if (source !== null && source !== destination) {
+        const moved = pageOrder.splice(source, 1)[0];
+        pageOrder.splice(destination, 0, moved);
+        dragSrc = null;
+        renderGrid();
+      }
+    });
+    pageGrid.appendChild(item);
+  });
+}
+
+function makeMoveButton(symbol, idx, direction, disabled) {
+  const button = document.createElement('button');
+  button.className = 'thumb-btn';
+  button.type = 'button';
+  button.textContent = symbol;
+  button.disabled = disabled;
+  button.title = direction < 0 ? 'Move page up' : 'Move page down';
+  button.addEventListener('click', () => moveThumb(idx, direction));
+  return button;
+}
+
+function moveThumb(idx, dir) {
+  const next = idx + dir;
+  if (next < 0 || next >= pageOrder.length) return;
+  [pageOrder[idx], pageOrder[next]] = [pageOrder[next], pageOrder[idx]];
+  renderGrid();
+}
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  if (!pdfFile || !pageOrder.length) return;
+  hideError();
+  showProgress(10, 'Loading original PDF…');
+  try {
+    const source = await PDFLib.PDFDocument.load(await pdfFile.arrayBuffer());
+    const output = await PDFLib.PDFDocument.create();
+    setProgress(50, 'Reordering pages…');
+    const copied = await output.copyPages(source, pageOrder.map(page => page - 1));
+    copied.forEach(page => output.addPage(page));
+    setProgress(90, 'Preparing download…');
+    const bytes = await output.save({ useObjectStreams: true });
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    if (downloadBtn.dataset.objectUrl) URL.revokeObjectURL(downloadBtn.dataset.objectUrl);
+    const objectUrl = URL.createObjectURL(blob);
+    downloadBtn.href = objectUrl;
+    downloadBtn.dataset.objectUrl = objectUrl;
+    document.getElementById('resultInfo').textContent =
+      pageOrder.length + ' pages saved in the displayed order.';
+    setProgress(100, 'Done!');
+    setTimeout(() => {
+      progressWrap.classList.remove('visible');
+      resultBox.classList.add('visible');
+    }, 300);
+  } catch (error) {
+    progressWrap.classList.remove('visible');
+    showError('Could not save reordered PDF: ' + (error.message || 'Unknown error'));
+  }
+});
+
+dropZone.addEventListener('click', event => {
+  if (event.target.closest('button')) return;
+  fileInput.click();
+});
+dropZone.addEventListener('dragover', event => {
+  event.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', event => {
+  event.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if (event.dataTransfer.files[0]) loadFile(event.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) loadFile(fileInput.files[0]);
+  fileInput.value = '';
+});
+
+function showProgress(percent, message) {
+  progressWrap.classList.add('visible');
+  resultBox.classList.remove('visible');
+  setProgress(percent, message);
+}
+function setProgress(percent, message) {
+  progressFill.style.width = percent + '%';
+  progressText.textContent = message;
+}
+function showError(message) {
+  errorBox.textContent = message;
+  errorBox.classList.add('visible');
+}
+function hideError() {
+  errorBox.classList.remove('visible');
+}
+</script>
+</body>
+</html>
