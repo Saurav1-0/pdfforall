@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF to Text — PDFforAll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tool.css">
+  <link rel="icon" href="../favicon.png" type="image/png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+        <img src="../logo.png" alt="PDFforAll Logo" width="32" height="32" style="display:block; object-fit:contain; border-radius:6px;">
+        <span>PDF<span style="color:var(--primary);">for</span>All</span>
+      </a>
+    <div class="header-nav"><div style="display:flex;gap:0.5rem;align-items:center;"><a href="../support.html" class="btn-support" style="text-decoration:none;"><span>💖</span> Support</a><a href="../index.html" class="btn-back">← All Tools</a></div></div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-icon-large">📋</div>
+  <h1>PDF to Text</h1>
+  <p>Extract all text content from a PDF document. Copy or download as a .txt file.</p>
+</section>
+
+<div class="tool-workspace">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf">
+    <div class="drop-zone-icon">📄</div>
+    <h3>Drop a PDF file here</h3>
+    <p>or click to browse</p>
+    <button class="btn-browse" onclick="document.getElementById('fileInput').click()">Browse File</button>
+  </div>
+
+  <div id="controls" style="display:none;">
+    <div class="options-panel" style="margin-top:1.5rem;">
+      <h3>Extraction Options</h3>
+      <div class="option-row">
+        <div><div class="option-label">Pages</div></div>
+        <select id="pageMode">
+          <option value="all">All pages</option>
+          <option value="range">Custom range</option>
+        </select>
+      </div>
+      <div class="option-row" id="rangeRow" style="display:none;">
+        <div><div class="option-label">Page Range</div><div class="option-hint">e.g. 1-3, 5</div></div>
+        <input type="text" id="rangeInput" placeholder="1-3, 5">
+      </div>
+      <div class="option-row">
+        <div><div class="option-label">Include Page Separators</div></div>
+        <input type="checkbox" id="pageSep" checked>
+      </div>
+      <div class="option-row">
+        <div>
+          <div class="option-label">OCR Scanned Pages</div>
+          <div class="option-hint">Recognize text in scanned/image-only pages. This may take longer.</div>
+        </div>
+        <input type="checkbox" id="enableOcr" checked>
+      </div>
+      <div class="option-row" id="ocrLanguageRow">
+        <div>
+          <div class="option-label">OCR Language</div>
+          <div class="option-hint">Choose the language printed in your scanned PDF.</div>
+        </div>
+        <select id="ocrLanguage">
+          <option value="eng">English</option>
+          <option value="hin">Hindi</option>
+          <option value="eng+hin">English + Hindi</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-action" id="extractBtn">📋 Extract Text</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText">Extracting…</p>
+  </div>
+
+  <div id="textResult" style="display:none;margin-top:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+      <span id="wordCount" style="font-size:0.82rem;color:var(--text-muted);"></span>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="copyBtn" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.45rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-family:inherit;">📋 Copy</button>
+        <button id="downloadTxtBtn" style="background:var(--surface2);border:1px solid var(--gold);color:var(--gold);padding:0.45rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-family:inherit;">⬇️ Download .txt</button>
+      </div>
+    </div>
+    <textarea id="textArea" readonly style="width:100%;height:400px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.6;padding:1rem;border-radius:12px;resize:vertical;outline:none;"></textarea>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer class="tool-footer"><p>PDFforAll.in · <a href="../index.html">All Tools</a></p></footer>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let pdfFile=null,pdfDoc=null;
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
+const progressWrap=document.getElementById('progressWrap'),progressFill=document.getElementById('progressFill'),progressText=document.getElementById('progressText');
+const errorBox=document.getElementById('errorBox'),textArea=document.getElementById('textArea');
+
+document.getElementById('pageMode').addEventListener('change',function(){
+  document.getElementById('rangeRow').style.display=this.value==='range'?'flex':'none';
+});
+
+document.getElementById('enableOcr').addEventListener('change',function(){
+  document.getElementById('ocrLanguageRow').style.display=this.checked?'flex':'none';
+});
+
+
+function parseRange(str,max){
+  const pages=new Set();
+  str.split(',').forEach(p=>{p=p.trim();if(p.includes('-')){const[a,b]=p.split('-').map(Number);for(let i=a;i<=Math.min(b,max);i++)pages.add(i);}else{const n=Number(p);if(n>=1&&n<=max)pages.add(n);}});
+  return [...pages];
+}
+
+async function loadFile(file){
+  if(!file.name.toLowerCase().endsWith('.pdf')){showError('Please select a PDF file.');return;}
+  pdfFile=file;hideError();document.getElementById('textResult').style.display='none';
+  const ab=await file.arrayBuffer();
+  pdfDoc=await pdfjsLib.getDocument({data:new Uint8Array(ab)}).promise;
+  dropZone.style.display='none';document.getElementById('controls').style.display='block';
+}
+
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInput.files[0]);fileInput.value='';});
+
+document.getElementById('extractBtn').addEventListener('click',async()=>{
+  if(!pdfDoc)return;
+  hideError();
+  progressWrap.classList.add('visible');
+  document.getElementById('textResult').style.display='none';
+
+  const n=pdfDoc.numPages;
+  const sep=document.getElementById('pageSep').checked;
+  const useOcr=document.getElementById('enableOcr').checked;
+  const language=document.getElementById('ocrLanguage').value;
+  let pages=document.getElementById('pageMode').value==='range'
+    ?parseRange(document.getElementById('rangeInput').value,n)
+    :[...Array(n)].map((_,i)=>i+1);
+
+  if(!pages.length){
+    progressWrap.classList.remove('visible');
+    showError('Please enter a valid page range, such as 1-3, 5.');
+    return;
+  }
+
+  let result='';
+  let worker=null;
+  let ocrPages=0;
+  try{
+    for(let pi=0;pi<pages.length;pi++){
+      const pageNumber=pages[pi];
+      setProgress(Math.round((pi/pages.length)*95),`Reading page ${pageNumber}/${n}…`);
+      const page=await pdfDoc.getPage(pageNumber);
+      const content=await page.getTextContent();
+      let pageText=content.items.map(item=>item.str).join(' ').trim();
+
+      // OCR only when the page has no meaningful selectable text.
+      if(useOcr && pageText.replace(/\s/g,'').length<15){
+        if(!worker){
+          setProgress(Math.round((pi/pages.length)*95),'Loading OCR engine and language data…');
+          worker=await Tesseract.createWorker(language, 1, {
+            logger: message=>{
+              if(message.status==='recognizing text'){
+                const pct=Math.round((message.progress||0)*100);
+                setProgress(Math.round((pi/pages.length)*95),`OCR page ${pageNumber}/${n}: ${pct}%`);
+              }else if(message.status==='loading language traineddata'){
+                setProgress(Math.round((pi/pages.length)*95),'Downloading OCR language data…');
+              }
+            }
+          });
+        }
+        setProgress(Math.round((pi/pages.length)*95),`Running OCR on page ${pageNumber}/${n}…`);
+        const viewport=page.getViewport({scale:2});
+        const canvas=document.createElement('canvas');
+        const context=canvas.getContext('2d',{willReadFrequently:true});
+        canvas.width=Math.ceil(viewport.width);
+        canvas.height=Math.ceil(viewport.height);
+        await page.render({canvasContext:context,viewport}).promise;
+        const ocr=await worker.recognize(canvas);
+        const recognized=(ocr.data && ocr.data.text)||'';
+        if(recognized.trim()){
+          pageText=recognized.trim();
+          ocrPages++;
+        }
+        canvas.width=0;
+        canvas.height=0;
+      }
+
+      if(sep) result+=`\n\n─── Page ${pageNumber} ───\n\n`;
+      result+=pageText;
+    }
+
+    if(worker){
+      await worker.terminate();
+      worker=null;
+    }
+
+    setProgress(100,`Done!${ocrPages?` OCR used on ${ocrPages} page(s).`:''}`);
+    setTimeout(()=>{
+      progressWrap.classList.remove('visible');
+      textArea.value=result.trim();
+      const words=result.trim().split(/\s+/).filter(Boolean).length;
+      const chars=result.trim().length;
+      document.getElementById('wordCount').textContent=
+        `${words.toLocaleString()} words · ${chars.toLocaleString()} characters · ${pages.length} pages${ocrPages?` · OCR: ${ocrPages} page(s)`:''}`;
+      document.getElementById('textResult').style.display='block';
+    },400);
+  }catch(e){
+    if(worker){
+      try{await worker.terminate();}catch(_){}
+    }
+    progressWrap.classList.remove('visible');
+    showError('Text extraction failed: '+(e?.message||'Please try another PDF or check your internet connection for OCR language data.'));
+  }
+});
+
+document.getElementById('copyBtn').addEventListener('click',async()=>{
+  await navigator.clipboard.writeText(textArea.value);
+  const btn=document.getElementById('copyBtn');btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',2000);
+});
+
+document.getElementById('downloadTxtBtn').addEventListener('click',()=>{
+  const blob=new Blob([textArea.value],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(pdfFile?.name||'document').replace('.pdf','')+'.txt';a.click();
+});
+
+function setProgress(pct,txt){progressFill.style.width=pct+'%';progressText.textContent=txt;}
+function showError(msg){errorBox.textContent=msg;errorBox.classList.add('visible');}
+function hideError(){errorBox.classList.remove('visible');}
+</script>
+</body>
+</html>
