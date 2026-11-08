@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop PDF — PDFforAll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tool.css">
+  <link rel="icon" href="../favicon.png" type="image/png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <style>
+    .crop-file-info{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;font-size:.88rem;overflow-wrap:anywhere}
+    .crop-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;margin:1rem 0}
+    .crop-toolbar .hint{font-size:.82rem;color:var(--text-muted,#777);line-height:1.5}
+    .crop-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+    .crop-secondary{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:.65rem .9rem;font:inherit;font-size:.85rem;cursor:pointer}
+    .crop-secondary:hover{border-color:var(--primary)}
+    .pages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:1rem;margin:1rem 0}
+    .crop-page-card{border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:.8rem;min-width:0}
+    .crop-page-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.65rem;font-size:.88rem;font-weight:700}
+    .crop-page-status{font-size:.75rem;font-weight:600;color:var(--text-muted,#777)}
+    .crop-page-status.active{color:#16834a}
+    .crop-stage{position:relative;width:100%;margin:auto;background:#e8e8ec;overflow:hidden;border-radius:8px;touch-action:none;user-select:none;line-height:0}
+    .crop-stage canvas{display:block;width:100%;height:auto;pointer-events:none}
+    .crop-selection{position:absolute;border:2px solid #6d4aff;background:rgba(109,74,255,.16);box-shadow:0 0 0 9999px rgba(0,0,0,.28);display:none;pointer-events:auto;cursor:move;touch-action:none;box-sizing:border-box;min-width:10px;min-height:10px}
+    .crop-handle{position:absolute;width:12px;height:12px;background:#fff;border:2px solid #5636d8;border-radius:3px;z-index:3;box-sizing:border-box;touch-action:none}
+    .crop-handle.nw{left:-7px;top:-7px;cursor:nwse-resize}.crop-handle.n{left:50%;top:-7px;transform:translateX(-50%);cursor:ns-resize}
+    .crop-handle.ne{right:-7px;top:-7px;cursor:nesw-resize}.crop-handle.e{right:-7px;top:50%;transform:translateY(-50%);cursor:ew-resize}
+    .crop-handle.se{right:-7px;bottom:-7px;cursor:nwse-resize}.crop-handle.s{left:50%;bottom:-7px;transform:translateX(-50%);cursor:ns-resize}
+    .crop-handle.sw{left:-7px;bottom:-7px;cursor:nesw-resize}.crop-handle.w{left:-7px;top:50%;transform:translateY(-50%);cursor:ew-resize}
+    .crop-stage.is-drawing{cursor:crosshair}.crop-stage.is-moving{cursor:move}.crop-stage.is-resizing{cursor:grabbing}
+    .crop-page-footer{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:.65rem;font-size:.78rem;color:var(--text-muted,#777)}
+    .crop-page-footer button{font-size:.78rem;padding:.45rem .65rem}
+    .crop-empty{padding:1.5rem;text-align:center;color:var(--text-muted,#777);border:1px dashed var(--border);border-radius:12px}
+    .crop-summary{font-size:.86rem;margin:.75rem 0;color:var(--text-muted,#777)}
+    @media(max-width:520px){.pages-grid{grid-template-columns:1fr}.crop-page-card{padding:.65rem}}
+  </style>
+
+<style id="pdfforall-upgrade-style">
+.pfa-nav-tools{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.pfa-home-link,.pfa-search-toggle{border:1px solid var(--border);background:#fff;color:var(--text);text-decoration:none;border-radius:999px;padding:.48rem .8rem;font:600 .82rem inherit;cursor:pointer}
+.pfa-home-link:hover,.pfa-search-toggle:hover{background:#F4F1FE;color:var(--primary)}
+.pfa-search-wrap{position:relative}
+.pfa-search-panel{display:none;position:absolute;right:0;top:calc(100% + .6rem);width:min( min(360px, calc(100vw - 2rem)), 360px);background:#fff;border:1px solid var(--border);border-radius:14px;padding:.8rem;box-shadow:0 16px 40px rgba(15,23,42,.16);z-index:100}
+.pfa-search-panel.open{display:block}
+.pfa-search-input{width:100%;padding:.7rem .8rem;border:1px solid var(--border);border-radius:9px;font:inherit;outline-color:var(--primary);color:var(--text)}
+.pfa-search-results{max-height:260px;overflow:auto;margin-top:.5rem}
+.pfa-search-results a{display:flex;gap:.55rem;padding:.55rem .6rem;border-radius:8px;color:var(--text);text-decoration:none;font-size:.88rem}
+.pfa-search-results a:hover{background:#F4F1FE;color:var(--primary)}
+.pfa-support-nudge{max-width:820px;width:calc(100% - 2rem);margin:0 auto 2rem;padding:.85rem 1rem;border:1px solid rgba(124,58,237,.15);background:rgba(244,241,254,.72);border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:1rem;color:var(--text);font-size:.88rem}
+.pfa-support-nudge a{white-space:nowrap;text-decoration:none;font-weight:700;color:var(--primary)}
+.pfa-change-file{display:none;margin:.75rem 0 0;padding:.55rem .9rem;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--primary);font:600 .85rem inherit;cursor:pointer}
+.pfa-change-file.visible{display:inline-flex}
+@media(max-width:640px){.header-inner{gap:.6rem;padding:.75rem 1rem}.pfa-nav-tools{gap:.3rem}.pfa-home-link,.pfa-search-toggle{font-size:.76rem;padding:.42rem .6rem}.pfa-support-nudge{align-items:flex-start;flex-direction:column}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="logo" style="text-decoration:none;display:flex;align-items:center;gap:.5rem;">
+      <img src="../logo.png" alt="PDFforAll Logo" width="32" height="32" style="display:block;object-fit:contain;border-radius:6px;">
+      <span>PDF<span style="color:var(--primary);">for</span>All</span>
+    </a>
+    <div class="header-nav"><div style="display:flex;gap:.5rem;align-items:center;"><a href="../support.html" class="btn-support" style="text-decoration:none;"><span>💖</span> Support</a><a href="../index.html" class="btn-back">← All Tools</a></div></div>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-icon-large">✂️</div>
+  <h1>Crop PDF</h1>
+  <p>Draw a crop area directly on each page. Every page can have its own independent crop selection.</p>
+</section>
+
+<div class="tool-workspace">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf,application/pdf">
+    <div class="drop-zone-icon">📄</div>
+    <h3>Drop a PDF file here</h3>
+    <p>or click to browse</p>
+    <button class="btn-browse" type="button" id="browseBtn">Browse File</button>
+  </div>
+
+  <div id="controls" style="display:none;margin-top:1.5rem;">
+    <div class="crop-file-info" id="fileInfo"></div>
+    <div class="options-panel">
+      <h3>Crop each page visually</h3>
+      <p style="font-size:.86rem;line-height:1.55;color:var(--text-muted,#777);margin:.25rem 0 .8rem;">
+        Drag on a page to draw its crop area. Then drag the white handles on any side or corner to expand or shrink it, or drag inside the selection to move it. You can set a different crop area on every page. Pages without a crop selection will remain unchanged.
+      </p>
+      <div class="crop-toolbar">
+        <div class="hint">Tip: draw a crop area, then drag its side or corner handles to resize it. Drag inside to move it. Use Reset to clear a page's selection.</div>
+        <div class="crop-actions">
+          <button class="crop-secondary" type="button" id="resetAllBtn">Reset all selections</button>
+          <button class="crop-secondary" type="button" id="chooseAnotherBtn">Choose another PDF</button>
+        </div>
+      </div>
+      <div class="crop-summary" id="selectionSummary">No pages selected for cropping.</div>
+    </div>
+    <div class="pages-grid" id="pagesGrid"></div>
+    <button class="btn-action" id="cropBtn" type="button" disabled>✂️ Crop Selected Pages</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <p class="progress-text" id="progressText">Processing…</p>
+  </div>
+  <div class="result-box" id="resultBox">
+    <div class="result-success">
+      <span class="result-success-icon">✅</span>
+      <div class="result-success-text"><h4>PDF cropped!</h4><p id="resultInfo"></p></div>
+    </div>
+    <a class="btn-download" id="downloadBtn" href="#" download="cropped.pdf">⬇️ Download cropped.pdf</a>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer class="tool-footer"><p>PDFforAll.in · <a href="../index.html">All Tools</a></p></footer>
+
+<script>
+(() => {
+  'use strict';
+
+  const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_CDN + 'pdf.worker.min.js';
+
+  const $ = id => document.getElementById(id);
+  const dropZone = $('dropZone');
+  const fileInput = $('fileInput');
+  const controls = $('controls');
+  const pagesGrid = $('pagesGrid');
+  const cropBtn = $('cropBtn');
+  const progressWrap = $('progressWrap');
+  const progressFill = $('progressFill');
+  const progressText = $('progressText');
+  const resultBox = $('resultBox');
+  const downloadBtn = $('downloadBtn');
+  const errorBox = $('errorBox');
+
+  let sourceFile = null;
+  let pdfJsDoc = null;
+  let pageStates = [];
+  let busy = false;
+  let currentObjectUrl = null;
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.classList.add('visible');
+  }
+  function hideError() { errorBox.classList.remove('visible'); }
+  function setProgress(percent, message) {
+    progressWrap.classList.add('visible');
+    progressFill.style.width = percent + '%';
+    progressText.textContent = message;
+  }
+  function clearResult() {
+    resultBox.classList.remove('visible');
+    if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+    currentObjectUrl = null;
+  }
+  function updateSummary() {
+    const count = pageStates.filter(state => state.crop).length;
+    $('selectionSummary').textContent = count
+      ? `${count} of ${pageStates.length} pages selected for cropping. Other pages will remain unchanged.`
+      : 'No pages selected for cropping. Draw a crop area on at least one page.';
+    cropBtn.disabled = count === 0 || busy;
+    cropBtn.textContent = count ? `✂️ Crop ${count} Selected Page${count === 1 ? '' : 's'}` : '✂️ Crop Selected Pages';
+    pageStates.forEach((state, index) => {
+      const status = document.getElementById(`cropStatus${index}`);
+      if (status) {
+        status.textContent = state.crop ? 'Crop area set' : 'No crop area';
+        status.classList.toggle('active', !!state.crop);
+      }
+    });
+  }
+
+  function setSelection(state, selection, selectionEl, stage) {
+    state.crop = selection;
+    if (!selection) {
+      selectionEl.style.display = 'none';
+    } else {
+      selectionEl.style.display = 'block';
+      selectionEl.style.left = `${selection.x * 100}%`;
+      selectionEl.style.top = `${selection.y * 100}%`;
+      selectionEl.style.width = `${selection.w * 100}%`;
+      selectionEl.style.height = `${selection.h * 100}%`;
+    }
+    updateSummary();
+  }
+
+  function attachDrawing(state, stage, selectionEl, statusEl) {
+    let start = null;
+    let pointerId = null;
+    let mode = null; // draw, move, or resize
+    let originalCrop = null;
+    let resizeHandle = null;
+
+    function normalizedPoint(event) {
+      const rect = stage.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
+        y: Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height))
+      };
+    }
+
+    function pointInsideCrop(point, crop) {
+      return !!crop && point.x >= crop.x && point.x <= crop.x + crop.w &&
+        point.y >= crop.y && point.y <= crop.y + crop.h;
+    }
+
+    function resizeCrop(point) {
+      if (!originalCrop || !resizeHandle) return;
+      const dx = point.x - start.x;
+      const dy = point.y - start.y;
+      let left = originalCrop.x;
+      let right = originalCrop.x + originalCrop.w;
+      let top = originalCrop.y;
+      let bottom = originalCrop.y + originalCrop.h;
+      const minSize = 0.01;
+
+      if (resizeHandle.includes('w')) left = Math.max(0, Math.min(right - minSize, originalCrop.x + dx));
+      if (resizeHandle.includes('e')) right = Math.min(1, Math.max(left + minSize, originalCrop.x + originalCrop.w + dx));
+      if (resizeHandle.includes('n')) top = Math.max(0, Math.min(bottom - minSize, originalCrop.y + dy));
+      if (resizeHandle.includes('s')) bottom = Math.min(1, Math.max(top + minSize, originalCrop.y + originalCrop.h + dy));
+
+      setSelection(state, { x: left, y: top, w: right - left, h: bottom - top }, selectionEl, stage);
+    }
+
+    stage.addEventListener('pointerdown', event => {
+      if (busy) return;
+      const point = normalizedPoint(event);
+      const handle = event.target.closest && event.target.closest('.crop-handle');
+      pointerId = event.pointerId;
+      start = point;
+
+      if (handle && selectionEl.contains(handle) && state.crop) {
+        mode = 'resize';
+        resizeHandle = handle.dataset.handle;
+        originalCrop = { ...state.crop };
+        stage.classList.add('is-resizing');
+      } else if (pointInsideCrop(point, state.crop)) {
+        mode = 'move';
+        originalCrop = { ...state.crop };
+        stage.classList.add('is-moving');
+      } else {
+        mode = 'draw';
+        originalCrop = null;
+        resizeHandle = null;
+        stage.classList.add('is-drawing');
+        setSelection(state, { x: point.x, y: point.y, w: 0, h: 0 }, selectionEl, stage);
+      }
+      stage.setPointerCapture(pointerId);
+      event.preventDefault();
+    });
+
+    stage.addEventListener('pointermove', event => {
+      if (!start || event.pointerId !== pointerId || !mode) return;
+      const point = normalizedPoint(event);
+      if (mode === 'move' && originalCrop) {
+        const dx = point.x - start.x;
+        const dy = point.y - start.y;
+        const x = Math.max(0, Math.min(1 - originalCrop.w, originalCrop.x + dx));
+        const y = Math.max(0, Math.min(1 - originalCrop.h, originalCrop.y + dy));
+        setSelection(state, { x, y, w: originalCrop.w, h: originalCrop.h }, selectionEl, stage);
+      } else if (mode === 'resize') {
+        resizeCrop(point);
+      } else if (mode === 'draw') {
+        setSelection(state, {
+          x: Math.min(start.x, point.x), y: Math.min(start.y, point.y),
+          w: Math.abs(point.x - start.x), h: Math.abs(point.y - start.y)
+        }, selectionEl, stage);
+      }
+    });
+
+    const finish = event => {
+      if (!start || (event && event.pointerId !== pointerId)) return;
+      start = null;
+      pointerId = null;
+      mode = null;
+      originalCrop = null;
+      resizeHandle = null;
+      stage.classList.remove('is-drawing', 'is-moving', 'is-resizing');
+      if (state.crop && (state.crop.w < 0.01 || state.crop.h < 0.01)) {
+        setSelection(state, null, selectionEl, stage);
+      }
+      updateSummary();
+    };
+    stage.addEventListener('pointerup', finish);
+    stage.addEventListener('pointercancel', finish);
+    stage.addEventListener('lostpointercapture', finish);
+  }
+  async function renderPage(pageNumber, state) {
+    const page = await pdfJsDoc.getPage(pageNumber);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const maxWidth = Math.min(760, Math.max(280, pagesGrid.clientWidth - 32));
+    const scale = Math.min(1.25, maxWidth / baseViewport.width);
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d', { alpha: false });
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    await page.render({ canvasContext: context, viewport }).promise;
+
+    const card = document.createElement('article');
+    card.className = 'crop-page-card';
+    const head = document.createElement('div');
+    head.className = 'crop-page-head';
+    const title = document.createElement('span');
+    title.textContent = `Page ${pageNumber}`;
+    const status = document.createElement('span');
+    status.className = 'crop-page-status';
+    status.id = `cropStatus${pageNumber - 1}`;
+    status.textContent = 'No crop area';
+    head.append(title, status);
+
+    const stage = document.createElement('div');
+    stage.className = 'crop-stage';
+    stage.style.aspectRatio = `${canvas.width} / ${canvas.height}`;
+    const selectionEl = document.createElement('div');
+    selectionEl.className = 'crop-selection';
+    const handles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    handles.forEach(handleName => {
+      const handle = document.createElement('span');
+      handle.className = `crop-handle ${handleName}`;
+      handle.dataset.handle = handleName;
+      handle.setAttribute('role', 'presentation');
+      handle.setAttribute('aria-label', `Resize crop from ${handleName}`);
+      selectionEl.appendChild(handle);
+    });
+    stage.append(canvas, selectionEl);
+
+    const footer = document.createElement('div');
+    footer.className = 'crop-page-footer';
+    const instruction = document.createElement('span');
+    instruction.textContent = 'Drag to select crop area';
+    const reset = document.createElement('button');
+    reset.type = 'button';
+    reset.className = 'crop-secondary';
+    reset.textContent = 'Reset';
+    reset.addEventListener('click', () => setSelection(state, null, selectionEl, stage));
+    footer.append(instruction, reset);
+    card.append(head, stage, footer);
+    pagesGrid.appendChild(card);
+
+    state.viewportWidth = viewport.width;
+    state.viewportHeight = viewport.height;
+    state.viewRotation = viewport.rotation;
+    attachDrawing(state, stage, selectionEl, status);
+  }
+
+  async function loadFile(file) {
+    if (!file || file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      showError('Please select a valid PDF file.');
+      return;
+    }
+    try {
+      hideError();
+      clearResult();
+      sourceFile = file;
+      pageStates = [];
+      pagesGrid.innerHTML = '';
+      $('fileInfo').textContent = `📄 ${file.name} · Loading PDF pages…`;
+      const data = new Uint8Array(await file.arrayBuffer());
+      pdfJsDoc = await pdfjsLib.getDocument({ data }).promise;
+      pageStates = Array.from({ length: pdfJsDoc.numPages }, () => ({ crop: null }));
+      $('fileInfo').textContent = `📄 ${file.name} · ${pdfJsDoc.numPages} pages · Draw a separate crop rectangle on any page.`;
+      dropZone.style.display = 'none';
+      controls.style.display = 'block';
+      cropBtn.disabled = true;
+      for (let page = 1; page <= pdfJsDoc.numPages; page++) {
+        setProgress(Math.round((page - 1) / pdfJsDoc.numPages * 100), `Preparing page ${page} of ${pdfJsDoc.numPages}…`);
+        await renderPage(page, pageStates[page - 1]);
+      }
+      progressWrap.classList.remove('visible');
+      updateSummary();
+    } catch (error) {
+      progressWrap.classList.remove('visible');
+      showError(`Unable to open this PDF: ${error.message}`);
+    }
+  }
+
+  $('browseBtn').addEventListener('click', () => fileInput.click());
+  $('chooseAnotherBtn').addEventListener('click', () => {
+    if (!busy) fileInput.click();
+  });
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files && fileInput.files[0];
+    fileInput.value = '';
+    if (file) loadFile(file);
+  });
+
+  dropZone.addEventListener('dragover', event => {
+    event.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', event => {
+    event.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (event.dataTransfer.files[0]) loadFile(event.dataTransfer.files[0]);
+  });
+
+  $('resetAllBtn').addEventListener('click', () => {
+    pageStates.forEach(state => { state.crop = null; });
+    pagesGrid.querySelectorAll('.crop-selection').forEach(el => { el.style.display = 'none'; });
+    updateSummary();
+  });
+
+  cropBtn.addEventListener('click', async () => {
+    if (!sourceFile || busy) return;
+    const selected = pageStates.map((state, index) => ({ state, index })).filter(item => item.state.crop);
+    if (!selected.length) {
+      showError('Draw a crop area on at least one page first.');
+      return;
+    }
+    busy = true;
+    cropBtn.disabled = true;
+    hideError();
+    clearResult();
+    try {
+      setProgress(5, 'Loading PDF for cropping…');
+      const bytes = await sourceFile.arrayBuffer();
+      const pdfDoc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+      const pdfPages = pdfDoc.getPages();
+
+      for (let i = 0; i < selected.length; i++) {
+        const { state, index } = selected[i];
+        const page = pdfPages[index];
+        const crop = state.crop;
+        const rotation = ((page.getRotation().angle % 360) + 360) % 360;
+        const box = page.getMediaBox();
+
+        // Convert the drawn rectangle from the rendered (rotated) PDF.js viewport into
+        // PDF page coordinates. PDF.js viewport uses a bottom-left PDF origin conversion.
+        const viewport = (await pdfJsDoc.getPage(index + 1)).getViewport({ scale: 1, rotation });
+        const p1 = viewport.convertToPdfPoint(crop.x * state.viewportWidth / (state.viewportWidth / viewport.width),
+                                              (crop.y + crop.h) * state.viewportHeight / (state.viewportHeight / viewport.height));
+        const p2 = viewport.convertToPdfPoint((crop.x + crop.w) * viewport.width,
+                                              crop.y * viewport.height);
+        let x = Math.min(p1[0], p2[0]);
+        let y = Math.min(p1[1], p2[1]);
+        let width = Math.abs(p2[0] - p1[0]);
+        let height = Math.abs(p2[1] - p1[1]);
+
+        // The preview may be scaled; normalized viewport coordinates map to the same
+        // page coordinates at scale 1. Clamp the crop box to the page's media bounds.
+        const media = page.getMediaBox();
+        const right = Math.min(media.x + media.width, x + width);
+        const top = Math.min(media.y + media.height, y + height);
+        x = Math.max(media.x, x);
+        y = Math.max(media.y, y);
+        width = right - x;
+        height = top - y;
+        if (!(width > 1 && height > 1)) {
+          throw new Error(`The crop area on page ${index + 1} is too small. Please draw a larger area.`);
+        }
+        page.setCropBox(x, y, width, height);
+        setProgress(Math.round(10 + ((i + 1) / selected.length) * 75), `Applying crop to page ${index + 1}…`);
+      }
+
+      setProgress(92, 'Saving cropped PDF…');
+      const output = await pdfDoc.save({ useObjectStreams: true });
+      const blob = new Blob([output], { type: 'application/pdf' });
+      currentObjectUrl = URL.createObjectURL(blob);
+      downloadBtn.href = currentObjectUrl;
+      downloadBtn.download = `${sourceFile.name.replace(/\.pdf$/i, '')}_cropped.pdf`;
+      $('resultInfo').textContent = `${selected.length} page${selected.length === 1 ? '' : 's'} cropped. Pages without a selection were left unchanged.`;
+      setProgress(100, 'Done!');
+      setTimeout(() => {
+        progressWrap.classList.remove('visible');
+        resultBox.classList.add('visible');
+      }, 350);
+    } catch (error) {
+      showError(`Cropping failed: ${error.message}`);
+      progressWrap.classList.remove('visible');
+    } finally {
+      busy = false;
+      updateSummary();
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+  });
+})();
+</script>
+
+<script id="pdfforall-upgrade-script">
+(function(){
+  const toolList = [{"name": "Compare PDFs", "url": "compare.html", "icon": "⚖️"}, {"name": "Compress PDF", "url": "compress.html", "icon": "🗜️"}, {"name": "Crop PDF", "url": "crop.html", "icon": "✂️"}, {"name": "Extract Pages", "url": "extract-pages.html", "icon": "📤"}, {"name": "Flatten PDF", "url": "flatten.html", "icon": "📄"}, {"name": "Grayscale PDF", "url": "grayscale.html", "icon": "⚫"}, {"name": "HTML to PDF", "url": "html-to-pdf.html", "icon": "🌐"}, {"name": "Image to PDF", "url": "images-to-pdf.html", "icon": "🖼️"}, {"name": "Merge PDF", "url": "merge.html", "icon": "🔗"}, {"name": "Page Numbers", "url": "page-numbers.html", "icon": "🔢"}, {"name": "PDF Info", "url": "pdf-info.html", "icon": "ℹ️"}, {"name": "PDF to HTML", "url": "pdf-to-html.html", "icon": "🌐"}, {"name": "PDF to Images", "url": "pdf-to-images.html", "icon": "🖼️"}, {"name": "PDF to Text", "url": "pdf-to-text.html", "icon": "📋"}, {"name": "Protect PDF", "url": "protect.html", "icon": "🔒"}, {"name": "Redact PDF", "url": "redact.html", "icon": "🖍️"}, {"name": "Remove Pages", "url": "remove-pages.html", "icon": "🗑️"}, {"name": "Reorder Pages", "url": "reorder.html", "icon": "↕️"}, {"name": "Repair PDF", "url": "repair.html", "icon": "🛠️"}, {"name": "Rotate PDF", "url": "rotate.html", "icon": "🔄"}, {"name": "Sign PDF", "url": "sign.html", "icon": "✍️"}, {"name": "Split PDF", "url": "split.html", "icon": "✂️"}, {"name": "Stamp PDF", "url": "stamp.html", "icon": "🔖"}, {"name": "SVG to PDF", "url": "svg-to-pdf.html", "icon": "🎨"}, {"name": "Text to PDF", "url": "text-to-pdf.html", "icon": "📝"}, {"name": "Unlock PDF", "url": "unlock.html", "icon": "🔓"}, {"name": "Watermark PDF", "url": "watermark.html", "icon": "💧"}];
+  const currentFile = location.pathname.split('/').pop();
+  const headerNav = document.querySelector('.header-nav');
+  if(headerNav && !document.getElementById('pfaNavTools')){
+    const nav=document.createElement('div');
+    nav.id='pfaNavTools'; nav.className='pfa-nav-tools';
+    nav.innerHTML='<a class="pfa-home-link" href="../index.html" aria-label="Go to homepage">⌂ Home</a><div class="pfa-search-wrap"><button type="button" class="pfa-search-toggle" id="pfaSearchToggle" aria-expanded="false">⌕ Find tools</button><div class="pfa-search-panel" id="pfaSearchPanel"><input class="pfa-search-input" id="pfaSearchInput" type="search" placeholder="Search PDF tools…" autocomplete="off" aria-label="Search PDF tools"><div class="pfa-search-results" id="pfaSearchResults"></div></div></div>';
+    headerNav.appendChild(nav);
+    const panel=nav.querySelector('#pfaSearchPanel'), input=nav.querySelector('#pfaSearchInput'), results=nav.querySelector('#pfaSearchResults'), toggle=nav.querySelector('#pfaSearchToggle');
+    function render(){
+      const q=input.value.trim().toLowerCase();
+      const matches=toolList.filter(t=>t.name.toLowerCase().includes(q) && t.url!==currentFile);
+      results.innerHTML='';
+      if(!matches.length){results.textContent='No matching tools found.';return;}
+      matches.forEach(t=>{
+        const a=document.createElement('a'); a.href=t.url; a.textContent=t.icon+' '+t.name; results.appendChild(a);
+      });
+    }
+    toggle.addEventListener('click',()=>{const open=!panel.classList.contains('open');panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));if(open){render();input.focus();}});
+    input.addEventListener('input',render);
+    document.addEventListener('click',e=>{if(!nav.contains(e.target)){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');}});
+  }
+  // Offer a lightweight support prompt on every tool page.
+  if(!document.querySelector('.pfa-support-nudge')){
+    const nudge=document.createElement('aside');nudge.className='pfa-support-nudge';
+    nudge.innerHTML='<span>💜 Like our free PDF tools? Your support helps us keep improving PDFforAll.</span><a href="../support.html">Support our work →</a>';
+    const footer=document.querySelector('footer');
+    if(footer) footer.parentNode.insertBefore(nudge,footer);
+  }
+  // Single-PDF tools: reopen the existing file picker without leaving the page.
+  const fileInput=document.querySelector('input[type="file"][accept*=".pdf"]:not([multiple]):not(#replacementInput)');
+  if(fileInput && fileInput.id==='fileInput' && !document.getElementById('pfaChangeFile')){
+    const change=document.createElement('button');change.type='button';change.id='pfaChangeFile';change.className='pfa-change-file';change.textContent='↻ Change PDF';
+    const zone=document.getElementById('dropZone');
+    if(zone && zone.parentNode) zone.parentNode.insertBefore(change,zone.nextSibling);
+    else {const workspace=document.querySelector('.tool-workspace');if(workspace)workspace.insertBefore(change,workspace.firstChild);}
+    fileInput.addEventListener('change',()=>{if(fileInput.files && fileInput.files.length)change.classList.add('visible');});
+    change.addEventListener('click',()=>{if(zone)zone.style.display='';fileInput.click();});
+  }
+})();
+</script>
+
+</body>
+</html>
