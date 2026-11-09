@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Free Online PDF Tools – Merge, Split, Compress & Convert | PDFforAll</title>
+  <meta name="description" content="Free online PDF tools to merge, split, compress, convert, rotate and edit PDF files. Process files in your browser with PDFforAll.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://www.pdfforall.in/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PDFforAll">
+  <meta property="og:title" content="Free Online PDF Tools – Merge, Split, Compress & Convert | PDFforAll">
+  <meta property="og:description" content="Free online PDF tools to merge, split, compress, convert, rotate and edit PDF files. Process files in your browser with PDFforAll.">
+  <meta property="og:url" content="https://www.pdfforall.in/">
+  <meta property="og:image" content="https://www.pdfforall.in/social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free Online PDF Tools – Merge, Split, Compress & Convert | PDFforAll">
+  <meta name="twitter:description" content="Free online PDF tools to merge, split, compress, convert, rotate and edit PDF files. Process files in your browser with PDFforAll.">
+  <meta name="twitter:image" content="https://www.pdfforall.in/social-preview.png">
+
+<link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="logo.webp">
+  <style>
+    :root {
+      --bg: #F6F8FD;
+      --card-bg: #FFFFFF;
+      --primary: #7C3AED;
+      --primary-hover: #6D28D9;
+      --primary-gradient: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
+      --text: #0F172A;
+      --text-muted: #5F6B7D;
+      --border: #EDF2F7;
+      --shadow-sm: 0 2px 6px rgba(124, 58, 237, 0.04);
+      --shadow-card: 0 10px 25px -5px rgba(99, 102, 241, 0.06), 0 4px 10px -3px rgba(15, 23, 42, 0.02);
+      --radius-pill: 9999px;
+      --radius-card: 22px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 12% 18%, rgba(124, 58, 237, 0.06) 0%, transparent 35%),
+        radial-gradient(circle at 88% 28%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(244, 63, 94, 0.04) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(232, 238, 245, 0.9);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0.95rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      background: var(--primary-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28);
+    }
+    .logo-badge svg { width: 22px; height: 22px; }
+    .logo-text { font-size: 1.28rem; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-text span { color: var(--primary); }
+
+    .nav-links { display: flex; align-items: center; gap: 1.8rem; }
+    .nav-link {
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--primary); }
+
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-secondary {
+      background: #EDE9FE;
+      color: #6D28D9;
+      border: 1px solid #DDD6FE;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: #DDD6FE; transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #FFFFFF;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+    }
+
+    /* Hero / Intro */
+    .hero {
+      max-width: 1240px;
+      margin: 2.5rem auto 1.2rem;
+      padding: 0 1.5rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #F3E8FF;
+      color: #6D28D9;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 0.75rem;
+      border: 1px solid #E9D5FF;
+    }
+    .hero h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: #0F172A;
+      margin-bottom: 0.4rem;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Controls Bar: Search & Filters */
+    .controls-container {
+      max-width: 1240px;
+      margin: 1.5rem auto 2.5rem;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .search-wrapper { position: relative; width: 100%; }
+    .search-icon {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94A3B8;
+      width: 19px;
+      height: 19px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      padding: 0.9rem 3rem 0.9rem 3.2rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.96rem;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.04);
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+    }
+    .search-shortcut {
+      position: absolute;
+      right: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      color: #5F6B7D;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    /* Category Pill Filters with Soft Color Accents */
+    .filters-track {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.3rem;
+      scrollbar-width: none;
+    }
+    .filters-track::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      color: var(--text-muted);
+      padding: 0.55rem 1.25rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .filter-btn:hover {
+      background: #F8FAFC;
+      color: var(--text);
+      border-color: #CBD5E1;
+    }
+    .filter-btn.active {
+      background: #ECE6FF;
+      color: #4C1D95;
+      border-color: #C4B5FD;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+    }
+
+    /* 3-Column Tools Grid */
+    .tools-grid {
+      max-width: 1240px;
+      margin: 0 auto 5rem;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 1024px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) {
+      .tools-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    /* Tool Card with Soft Tinted Light Colors */
+    .tool-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 1.7rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s, border-color 0.25s;
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 35px -10px rgba(124, 58, 237, 0.12);
+      border-color: #C4B5FD;
+    }
+
+    /* Category Tint Surfaces (Delicate pastel wash) */
+    .tool-card.cat-organize {
+      background: linear-gradient(180deg, #FFFFFF 65%, #FAF5FF 100%);
+      border-color: #E9D5FF;
+    }
+    .tool-card.cat-convert {
+      background: linear-gradient(180deg, #FFFFFF 65%, #F0FDF9 100%);
+      border-color: #CCFBF1;
+    }
+    .tool-card.cat-edit {
+      background: linear-gradient(180deg, #FFFFFF 65%, #FFF1F2 100%);
+      border-color: #FECDD3;
+    }
+    .tool-card.cat-optimize {
+      background: linear-gradient(180deg, #FFFFFF 65%, #FFFBEB 100%);
+      border-color: #FDE68A;
+    }
+    .tool-card.cat-security {
+      background: linear-gradient(180deg, #FFFFFF 65%, #EFF6FF 100%);
+      border-color: #BFDBFE;
+    }
+
+    /* Decorative pastel shapes in corners */
+    .card-corner-shape {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      opacity: 0.65;
+      pointer-events: none;
+      transition: transform 0.3s;
+    }
+    .tool-card:hover .card-corner-shape { transform: scale(1.2); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.15rem;
+    }
+    .icon-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .icon-box svg { width: 22px; height: 22px; }
+    .card-arrow {
+      color: #94A3B8;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .tool-card:hover .card-arrow {
+      color: var(--primary);
+      transform: translate(2px, -2px);
+    }
+    .tool-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 0.4rem;
+    }
+    .tool-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.48;
+    }
+
+    /* Soft Icon Badges */
+    .icon-lavender { background: #EDE9FE; color: #7C3AED; }
+    .icon-pink { background: #FCE7F3; color: #DB2777; }
+    .icon-teal { background: #CCFBF1; color: #0D9488; }
+    .icon-amber { background: #FEF3C7; color: #D97706; }
+    .icon-blue { background: #DBEAFE; color: #2563EB; }
+    .icon-emerald { background: #D1FAE5; color: #059669; }
+
+    /* Corner shapes */
+    .shape-lavender { background: #E9D5FF; }
+    .shape-pink { background: #FBCFE8; }
+    .shape-teal { background: #99F6E4; }
+    .shape-amber { background: #FDE68A; }
+    .shape-blue { background: #BAE6FD; }
+    .shape-emerald { background: #A7F3D0; }
+
+    footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 3.5rem 1.5rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2.2rem;
+    }
+    @media (max-width: 768px) { .footer-inner { grid-template-columns: 1fr 1fr; } }
+    .footer-brand p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 0.6rem;
+      max-width: 290px;
+      line-height: 1.6;
+    }
+    .footer-col h5, .footer-col h2 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-col a {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-col a:hover { color: var(--primary); }
+    .footer-bottom {
+      max-width: 1240px;
+      margin: 2.8rem auto 0;
+      padding-top: 1.6rem;
+      border-top: 1px solid #F1F5F9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+  
+/* Support & Donate Styles */
+.btn-support {
+  background: #FFF1F5;
+  color: #9F1239;
+  border: 1px solid #FECDD3;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.06);
+}
+.btn-support:hover {
+  background: #FFE4E6;
+  border-color: #9F1239;
+  transform: translateY(-1px);
+}
+
+/* Support Section Banner */
+.support-banner-section {
+  max-width: 1240px;
+  margin: 0 auto 5rem;
+  padding: 0 1.5rem;
+}
+.support-banner {
+  background: linear-gradient(135deg, #FFF5F7 0%, #FAF5FF 50%, #F0FDF9 100%);
+  border: 1.5px solid #FBCFE8;
+  border-radius: var(--radius-card);
+  padding: 2.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  box-shadow: 0 10px 30px -10px rgba(225, 29, 72, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+.support-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, #F43F5E, #8B5CF6, #10B981);
+}
+.support-banner-content {
+  max-width: 680px;
+}
+.support-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #FFE4E6;
+  color: #BE123C;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 0.75rem;
+}
+.support-banner h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.4px;
+}
+.support-banner p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.support-banner-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.btn-donate-primary {
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+  color: #FFFFFF;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.85rem 1.8rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.28);
+  transition: all 0.2s;
+}
+.btn-donate-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(225, 29, 72, 0.38);
+}
+.support-subtext {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Modal Popup */
+.support-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.support-modal-backdrop.active {
+  display: flex;
+  opacity: 1;
+}
+.support-modal {
+  background: #FFFFFF;
+  border-radius: var(--radius-card);
+  max-width: 480px;
+  width: 100%;
+  padding: 2.2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.25s ease;
+  border: 1px solid #EDF2F7;
+}
+.support-modal-backdrop.active .support-modal {
+  transform: scale(1);
+}
+.modal-close-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background: #F1F5F9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #5F6B7D;
+  transition: all 0.15s;
+}
+.modal-close-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+.modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.modal-heart-icon {
+  width: 52px;
+  height: 52px;
+  background: #FFE4E6;
+  color: #9F1239;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 0.75rem;
+}
+.modal-header h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 0.35rem;
+}
+.modal-header p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.donation-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+.donation-chip {
+  background: #F8FAFD;
+  border: 1.5px solid #E2E8F0;
+  padding: 0.65rem 0.5rem;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1E293B;
+  transition: all 0.2s;
+}
+.donation-chip:hover, .donation-chip.active {
+  background: #FFF1F5;
+  border-color: #9F1239;
+  color: #9F1239;
+}
+.donation-chip span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.donation-method-box {
+  background: #F8FAFD;
+  border: 1px solid #E8EEF5;
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  text-align: center;
+}
+.donation-method-box h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+.upi-field-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1.5px dashed #CBD5E1;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.5rem;
+}
+.upi-id-text {
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+.btn-copy-upi {
+  background: #EDE9FE;
+  color: #6D28D9;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-copy-upi:hover {
+  background: #DDD6FE;
+}
+.external-support-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.btn-support-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-bmc {
+  background: #FFDD00;
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(255, 221, 0, 0.25);
+}
+.btn-bmc:hover {
+  background: #FACC15;
+  transform: translateY(-1px);
+}
+.btn-paypal {
+  background: #0070BA;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 112, 186, 0.25);
+}
+.btn-paypal:hover {
+  background: #005EA6;
+  transform: translateY(-1px);
+}
+.modal-footer-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.75rem;
+  line-height: 1.4;
+}
+@media (max-width: 768px) {
+  .support-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .support-banner-content {
+    max-width: 100%;
+  }
+  .support-banner-actions {
+    width: 100%;
+  }
+}
+
+  </style>
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="js/consent-analytics.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "PDFforAll",
+    "url": "https://www.pdfforall.in/",
+    "description": "Free online PDF tools to merge, split, compress, convert and edit PDF files."
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo-group">
+        <img src="logo-36.webp" srcset="logo-36.webp 1x, logo-72.webp 2x" alt="PDFforAll Logo" width="36" height="36" style="display:block; object-fit:contain; border-radius:8px;" decoding="async">
+        <span class="logo-text">PDFforALL<span>.</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#tools" class="nav-link">PDF tools</a>
+        <a href="faq.html" class="nav-link">How it works</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+      <div class="header-actions">
+        <a href="support.html" class="btn-support" style="text-decoration:none;">
+          <span>💖</span> Support
+        </a>
+        <a href="#tools" class="btn-secondary">Explore tools</a>
+        <a href="tools/merge.html" class="btn-primary">
+          Upload PDF 
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-badge">⚡ 100% Client-Side • Zero Uploads</div>
+    <h1>Powerful PDF tools, <span>without the complicated workflow.</span></h1>
+    <p>Fast, private, and lightweight document processing right inside your browser.</p>
+  </section>
+
+  <div class="controls-container" id="tools">
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="toolSearch" class="search-input" placeholder="Search PDF tools (e.g. compress, merge, sign)..." autocomplete="off">
+      <span class="search-shortcut">/</span>
+    </div>
+    <div class="filters-track" id="filterContainer">
+      <button class="filter-btn active" data-cat="all">All tools</button>
+      <button class="filter-btn" data-cat="organize">Organize</button>
+      <button class="filter-btn" data-cat="convert">Convert</button>
+      <button class="filter-btn" data-cat="edit">Edit & sign</button>
+      <button class="filter-btn" data-cat="optimize">Optimize</button>
+      <button class="filter-btn" data-cat="security">Security</button>
+    </div>
+  </div>
+
+  <main class="tools-grid" id="toolsGrid"></main>
+
+    <!-- Support / Optional Donation Banner -->
+  <section class="support-banner-section">
+    <div class="support-banner">
+      <div class="support-banner-content">
+        <div class="support-tag">💖 Completely Free • Zero Ads</div>
+        <h2>Built with Passion, Kept Free for Everyone</h2>
+        <p>I built PDFforAll to keep essential PDF tools 100% free and private. If this saved you time or deadline stress, a small <strong>₹50 chai ☕</strong> helps keep the servers running. <em>Support is completely optional!</em></p>
+      </div>
+      <div class="support-banner-actions">
+        <a href="support.html" class="btn-donate-primary" style="text-decoration:none;">
+          <span>☕</span> Buy Us a Coffee
+        </a>
+        <div class="support-subtext">Optional • Any amount helps</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo-text">PDFforALL<span>.</span></div>
+        <p>Zero-upload client-side PDF workspace. High-speed, private, and always accessible right inside your browser.</p>
+      </div>
+      <div class="footer-col">
+        <h2>Popular Tools</h2>
+        <ul>
+          <li><a href="tools/merge.html">Merge PDF</a></li>
+          <li><a href="tools/split.html">Split PDF</a></li>
+          <li><a href="tools/compress.html">Compress PDF</a></li>
+          <li><a href="tools/sign.html">Sign PDF</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="support.html">💖 Support Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h2>Legal & Privacy</h2>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 PDFforAll.in. All rights reserved.</div>
+      <div>100% Client-Side Processing • Your files never leave your device.</div>
+    </div>
+  </footer>
+
+  <script>
+    const TOOLS = [
+      { id: 'merge', name: 'Merge PDF', desc: 'Combine multiple PDF files into one.', cat: 'organize', url: 'tools/merge.html', iconColor: 'icon-lavender', shape: 'shape-lavender', icon: '<path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1m5-4h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4"/>' },
+      { id: 'split', name: 'Split PDF', desc: 'Separate pages or extract a custom range.', cat: 'organize', url: 'tools/split.html', iconColor: 'icon-pink', shape: 'shape-pink', icon: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/>' },
+      { id: 'remove-pages', name: 'Remove Pages', desc: 'Delete unwanted pages from your document.', cat: 'organize', url: 'tools/remove-pages.html', iconColor: 'icon-teal', shape: 'shape-teal', icon: '<path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>' },
+      { id: 'reorder', name: 'Reorder Pages', desc: 'Rearrange and sort pages visually with drag & drop.', cat: 'organize', url: 'tools/reorder.html', iconColor: 'icon-blue', shape: 'shape-blue', icon: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>' },
+      { id: 'rotate', name: 'Rotate PDF', desc: 'Turn pages to the right orientation (90°, 180°).', cat: 'organize', url: 'tools/rotate.html', iconColor: 'icon-amber', shape: 'shape-amber', icon: '<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>' },
+      { id: 'extract-pages', name: 'Extract Pages', desc: 'Extract selected pages into a standalone PDF.', cat: 'organize', url: 'tools/extract-pages.html', iconColor: 'icon-lavender', shape: 'shape-pink', icon: '<path d="M7 17l9.2-9.2M17 17V7H7"/>' },
+      { id: 'images-to-pdf', name: 'Images to PDF', desc: 'Convert JPG, PNG, WebP images to PDF.', cat: 'convert', url: 'tools/images-to-pdf.html', iconColor: 'icon-emerald', shape: 'shape-emerald', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>' },
+      { id: 'html-to-pdf', name: 'HTML to PDF', desc: 'Render web pages or raw HTML code into PDF.', cat: 'convert', url: 'tools/html-to-pdf.html', iconColor: 'icon-blue', shape: 'shape-blue', icon: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>' },
+      { id: 'text-to-pdf', name: 'Text to PDF', desc: 'Turn plain text or notes into a clean PDF document.', cat: 'convert', url: 'tools/text-to-pdf.html', iconColor: 'icon-teal', shape: 'shape-teal', icon: '<line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="13" y1="18" x2="3" y2="18"/>' },
+      { id: 'svg-to-pdf', name: 'SVG to PDF', desc: 'Convert vector SVG graphics to high-res PDF.', cat: 'convert', url: 'tools/svg-to-pdf.html', iconColor: 'icon-pink', shape: 'shape-lavender', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
+      { id: 'pdf-to-images', name: 'PDF to Images', desc: 'Export pages as PNG or JPG images or a ZIP.', cat: 'convert', url: 'tools/pdf-to-images.html', iconColor: 'icon-amber', shape: 'shape-amber', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M20.4 14.5L16 10 4 20"/>' },
+      { id: 'pdf-to-text', name: 'PDF to Text', desc: 'Extract readable text content into a TXT file.', cat: 'convert', url: 'tools/pdf-to-text.html', iconColor: 'icon-lavender', shape: 'shape-blue', icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' },
+      { id: 'pdf-to-html', name: 'PDF to HTML', desc: 'Convert PDF document structure to web-ready HTML.', cat: 'convert', url: 'tools/pdf-to-html.html', iconColor: 'icon-emerald', shape: 'shape-pink', icon: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>' },
+      { id: 'compress', name: 'Compress PDF', desc: 'Reduce file size while preserving high visual quality.', cat: 'optimize', url: 'tools/compress.html', iconColor: 'icon-amber', shape: 'shape-amber', icon: '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>' },
+      { id: 'repair', name: 'Repair PDF', desc: 'Fix corrupted cross-references and broken object streams.', cat: 'optimize', url: 'tools/repair.html', iconColor: 'icon-teal', shape: 'shape-teal', icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' },
+      { id: 'flatten', name: 'Flatten PDF', desc: 'Lock form fields and annotations into static pages.', cat: 'optimize', url: 'tools/flatten.html', iconColor: 'icon-lavender', shape: 'shape-lavender', icon: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>' },
+      { id: 'grayscale', name: 'Grayscale PDF', desc: 'Convert full-colour pages to clean monochrome black & white.', cat: 'optimize', url: 'tools/grayscale.html', iconColor: 'icon-pink', shape: 'shape-pink', icon: '<circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"/>' },
+      { id: 'watermark', name: 'Watermark PDF', desc: 'Stamp text or image watermarks across your pages.', cat: 'edit', url: 'tools/watermark.html', iconColor: 'icon-blue', shape: 'shape-blue', icon: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>' },
+      { id: 'page-numbers', name: 'Add Page Numbers', desc: 'Insert customizable numbering and numbering schemes.', cat: 'edit', url: 'tools/page-numbers.html', iconColor: 'icon-lavender', shape: 'shape-lavender', icon: '<line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>' },
+      { id: 'crop', name: 'Crop PDF', desc: 'Trim margins and resize PDF canvas dimensions.', cat: 'edit', url: 'tools/crop.html', iconColor: 'icon-teal', shape: 'shape-teal', icon: '<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>' },
+      { id: 'sign', name: 'Sign PDF', desc: 'Draw or type your signature and burn it into pages.', cat: 'edit', url: 'tools/sign.html', iconColor: 'icon-pink', shape: 'shape-pink', icon: '<path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/>' },
+      { id: 'redact', name: 'Redact PDF', desc: 'Black out sensitive text and permanently wipe it from the file.', cat: 'edit', url: 'tools/redact.html', iconColor: 'icon-amber', shape: 'shape-amber', icon: '<rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/>' },
+      { id: 'stamp', name: 'Stamp PDF', desc: 'Add APPROVED, CONFIDENTIAL or custom badges.', cat: 'edit', url: 'tools/stamp.html', iconColor: 'icon-emerald', shape: 'shape-emerald', icon: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>' },
+      { id: 'protect', name: 'Protect PDF', desc: 'Encrypt document with user passwords and permission flags.', cat: 'security', url: 'tools/protect.html', iconColor: 'icon-amber', shape: 'shape-amber', icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' },
+      { id: 'unlock', name: 'Unlock PDF', desc: 'Remove password restrictions from files you own.', cat: 'security', url: 'tools/unlock.html', iconColor: 'icon-emerald', shape: 'shape-emerald', icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>' },
+      { id: 'compare', name: 'Compare PDFs', desc: 'Side-by-side visual diff comparison between two PDF revisions.', cat: 'security', url: 'tools/compare.html', iconColor: 'icon-pink', shape: 'shape-pink', icon: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' },
+      { id: 'pdf-info', name: 'PDF Info', desc: 'Audit metadata, page sizes, encryption mode, and producer tags.', cat: 'security', url: 'tools/pdf-info.html', iconColor: 'icon-lavender', shape: 'shape-lavender', icon: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' }
+    ];
+    const grid = document.getElementById('toolsGrid');
+    const searchInput = document.getElementById('toolSearch');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    let currentFilter = 'all';
+
+    function renderTools(filter = 'all', query = '') {
+      grid.innerHTML = '';
+      const q = query.toLowerCase().trim();
+      const filtered = TOOLS.filter(t => {
+        const matchesCat = filter === 'all' || t.cat === filter;
+        const matchesQuery = !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.id.includes(q);
+        return matchesCat && matchesQuery;
+      });
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3.5rem;color:var(--text-muted);background:#FFFFFF;border-radius:20px;border:1px solid #E2E8F0;">No matching PDF tools found. Try searching for "merge", "split", or "convert".</div>';
+        return;
+      }
+      filtered.forEach(tool => {
+        const card = document.createElement('a');
+        card.href = tool.url;
+        card.className = `tool-card cat-${tool.cat}`;
+        card.innerHTML = `
+          <div class="card-corner-shape ${tool.shape}"></div>
+          <div class="card-top">
+            <div class="icon-box ${tool.iconColor}">
+              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">${tool.icon}</svg>
+            </div>
+            <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+          </div>
+          <h2 class="tool-title">${tool.name}</h2>
+          <p class="tool-desc">${tool.desc}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.cat;
+        renderTools(currentFilter, searchInput.value);
+      });
+    });
+    searchInput.addEventListener('input', e => {
+      renderTools(currentFilter, e.target.value);
+    });
+    window.addEventListener('keydown', e => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+    renderTools();
+  </script>
+
+  </body>
+</html>
