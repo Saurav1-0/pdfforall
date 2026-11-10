@@ -1,0 +1,79 @@
+/* PDFforAll theme switcher: dark palette overrides */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-page:#0b1020; --bg-card:#121a2b; --text:#e5eaf5; --text-muted:#a6b2c8;
+  --border:#293449; --border-focus:#a78bfa;
+  --tint-lavender:#211b35; --tint-purple:#251b36; --tint-sky:#15283a;
+  --tint-mint:#12302b; --tint-amber:#332918; --tint-rose:#351c2a;
+  --bg:#0b1020; --card-bg:#121a2b;
+}
+:root[data-theme="dark"] body {
+  background-color:#0b1020 !important; color:#e5eaf5 !important;
+  background-image:radial-gradient(circle at 10% 15%,rgba(124,58,237,.12),transparent 35%),
+    radial-gradient(circle at 90% 40%,rgba(99,102,241,.10),transparent 40%) !important;
+}
+:root[data-theme="dark"] header,
+:root[data-theme="dark"] nav,
+:root[data-theme="dark"] .header,
+:root[data-theme="dark"] .navbar {
+  background:rgba(15,23,42,.92) !important; border-color:#293449 !important; color:#e5eaf5 !important;
+}
+:root[data-theme="dark"] .logo,
+:root[data-theme="dark"] h1, :root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3, :root[data-theme="dark"] h4,
+:root[data-theme="dark"] label, :root[data-theme="dark"] .option-label {
+  color:#e5eaf5;
+}
+:root[data-theme="dark"] .tool-hero h1 {
+  background:linear-gradient(135deg,#f1f5f9 30%,#c4b5fd 100%) !important;
+  -webkit-background-clip:text !important; background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+}
+:root[data-theme="dark"] .tool-workspace,
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .tool-card,
+:root[data-theme="dark"] .feature-card,
+:root[data-theme="dark"] .workspace,
+:root[data-theme="dark"] .modal,
+:root[data-theme="dark"] .panel {
+  background:#121a2b !important; color:#e5eaf5 !important; border-color:#293449 !important;
+}
+:root[data-theme="dark"] .options-panel,
+:root[data-theme="dark"] .drop-zone,
+:root[data-theme="dark"] .preview-card,
+:root[data-theme="dark"] .upload-area,
+:root[data-theme="dark"] .faq-item {
+  background:#182338 !important; color:#e5eaf5 !important; border-color:#34425b !important;
+}
+:root[data-theme="dark"] p, :root[data-theme="dark"] li,
+:root[data-theme="dark"] small, :root[data-theme="dark"] .muted,
+:root[data-theme="dark"] .option-hint {
+  color:#b8c4d8;
+}
+:root[data-theme="dark"] a:not(.btn-action):not(.btn-download):not(.btn-browse) { color:#c4b5fd; }
+:root[data-theme="dark"] input, :root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background:#0d1526 !important; color:#e5eaf5 !important; border-color:#3a4963 !important;
+}
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder { color:#8290a8 !important; }
+:root[data-theme="dark"] table, :root[data-theme="dark"] th,
+:root[data-theme="dark"] td { border-color:#34425b !important; color:#e5eaf5; }
+:root[data-theme="dark"] footer { background:#0a1020 !important; color:#b8c4d8 !important; border-color:#293449 !important; }
+:root[data-theme="dark"] .btn-back { background:#2b2350 !important; color:#ddd6fe !important; }
+:root[data-theme="dark"] .btn-back:hover { background:#3b2d69 !important; }
+:root[data-theme="dark"] .brand-search-alias { color:#b8c4d8 !important; }
+#pdfforall-theme-toggle {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:40px; padding:8px 13px; border:1px solid rgba(148,163,184,.55);
+  border-radius:999px; background:rgba(255,255,255,.92); color:#172033;
+  font:600 13px/1 system-ui,sans-serif; cursor:pointer; box-shadow:0 4px 16px rgba(15,23,42,.12);
+  transition:background .2s ease,transform .2s ease; z-index:1000;
+}
+#pdfforall-theme-toggle:hover { transform:translateY(-1px); }
+:root[data-theme="dark"] #pdfforall-theme-toggle {
+  background:#1b2740; color:#f1f5f9; border-color:#465674;
+}
+@media(prefers-reduced-motion:no-preference) {
+  body, body * { transition-property:background-color,border-color,color; transition-duration:.18s; }
+}
