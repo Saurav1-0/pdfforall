@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">  <title>Contact PDFforAll</title>
+  <meta name="description" content="Contact PDFforAll with questions, feedback, bug reports or suggestions about our free online PDF tools. Find PDFforAll by searching PDF for All, PDF For All or pdf forall.">
+<meta name="keywords" content="PDFforAll, PDF for All, PDF For All, pdf forall, online PDF tools">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://www.pdfforall.in/contact">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PDFforAll">
+  <meta property="og:title" content="Contact PDFforAll">
+  <meta property="og:description" content="Contact PDFforAll with questions, feedback, bug reports or suggestions about our free online PDF tools.">
+  <meta property="og:url" content="https://www.pdfforall.in/contact">
+  <meta property="og:image" content="https://www.pdfforall.in/social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contact PDFforAll">
+  <meta name="twitter:description" content="Contact PDFforAll with questions, feedback, bug reports or suggestions about our free online PDF tools.">
+  <meta name="twitter:image" content="https://www.pdfforall.in/social-preview.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/tool.css">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+<script defer src="js/consent-analytics.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:0.5rem;">
+        <img src="logo.webp" alt="PDFforAll Logo" width="32" height="32" style="display:block; object-fit:contain; border-radius:6px;">
+        <span>PDF<span style="color:var(--primary);">for</span>All</span>
+      </a>
+      <a href="index.html" class="btn-back">← All Tools</a>
+    </div>
+  </header>
+  <section class="tool-hero">
+    <h1>Contact Us</h1>
+    <p>Have feedback or suggestions? We would love to hear from you.</p>
+  </section>
+  <main class="tool-workspace" style="max-width:800px;line-height:1.7;">
+    
+    <form onsubmit="event.preventDefault(); if(this.website.value){return false;} alert('The form is not connected to an email service yet. Your message has not been sent.');">
+      <div class="option-row" style="flex-direction:column;align-items:flex-start;margin-bottom:1rem;">
+        <label class="option-label" for="contactEmail">Your Email</label>
+        <input type="email" name="email" id="contactEmail" autocomplete="email" maxlength="254" placeholder="you@domain.com" style="width:100%;margin-top:0.3rem;" required>
+      </div>
+      <div class="option-row" style="flex-direction:column;align-items:flex-start;margin-bottom:1.5rem;">
+        <label class="option-label" for="contactMessage">Message</label>
+        <textarea id="contactMessage" name="message" maxlength="5000" rows="5" style="width:100%;padding:0.75rem;border-radius:8px;border:1px solid var(--border);font-family:inherit;" required></textarea>
+      </div>
+      <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;"><label for="website">Leave this field empty</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <button type="submit" class="btn-action">Send Message</button>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-top:.75rem;">Note: message delivery is not connected yet; this form currently validates input but does not send email.</p>
+    </form>
+  </main>
+  <footer class="tool-footer"><p>PDFforAll.in • <a href="index.html">All Tools</a></p></footer>
+</body>
+</html>
